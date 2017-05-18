@@ -7,12 +7,22 @@ from termcolor import colored
 
 
 create_db = """
+
+CREATE TABLE IF NOT EXISTS scan (
+    id INTEGER PRIMARY KEY,
+    commandline TEXT,
+    hosts_total INTEGER,
+    hosts_up INTEGER,
+    hosts_down INTEGER
+);
+
 CREATE TABLE IF NOT EXISTS hosts (
     id INTEGER PRIMARY KEY,
     address TEXT,
     hostname TEXT,
     os TEXT,
-    status TEXT
+    status TEXT,
+    scan_id INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS ports (
@@ -22,14 +32,16 @@ CREATE TABLE IF NOT EXISTS ports (
     protocol TEXT,
     service TEXT,
     banner TEXT,
-    status TEXT
+    status TEXT,
+    scan_id INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS port_list (
     id INTEGER PRIMARY KEY,
     address TEXT,
     tcp TEXT,
-    udp TEXT
+    udp TEXT,
+    scan_id INTEGER
 );
 """
 
@@ -95,42 +107,53 @@ def host_to_tupel(host):
     return host.address, hostname, os, host.status
 
 
-def insert(conn, host):
+def insert(conn, host, scan_id=-1):
     cursor = conn.cursor()
 
-    insert_host_cmd = "INSERT INTO hosts (address, hostname, os, status) VALUES (?,?,?,?);"
-    values = host_to_tupel(host)
+    insert_host_cmd = "INSERT INTO hosts (address, hostname, os, status, scan_id) VALUES (?,?,?,?,?);"
+    address, hostname, os, status = host_to_tupel(host)
+    values = address, hostname, os, status, scan_id
     cursor.execute(insert_host_cmd, values)
 
-    insert_port_cmd = "INSERT INTO ports (address, port, protocol, service, banner, status) VALUES (?,?,?,?,?,?);"
+    insert_port_cmd = "INSERT INTO ports (address, port, protocol, service, banner, status,scan_id) VALUES " \
+                      "(?,?,?,?,?,?,?);"
     ports = get_ports(host)
     for port, proto, servicename, state, banner in ports:
-        port_values = (host.address, port, proto, servicename, state, banner)
+        port_values = (host.address, port, proto, servicename, state, banner,scan_id)
         cursor.execute(insert_port_cmd, port_values)
 
-    insert_port_list_cmd = "INSERT INTO port_list (address, tcp, udp) VALUES (?,?,?);"
+    insert_port_list_cmd = "INSERT INTO port_list (address, tcp, udp,scan_id) VALUES (?,?,?,?);"
     tcp_ports = get_open_ports(host, protocol="tcp")
     udp_ports = get_open_ports(host, protocol="udp")
 
     tcp = ",".join(str(x) for x in tcp_ports)
     udp = ",".join(str(x) for x in udp_ports)
     if len(tcp) > 0 or len(udp) > 0:
-        cursor.execute(insert_port_list_cmd, (host.address, tcp, udp))
+        cursor.execute(insert_port_list_cmd, (host.address, tcp, udp,scan_id))
 
 
 
 def import_file(db, infile):
     conn = sqlite3.connect(db)
-    conn.cursor().executescript(create_db)
+    cursor = conn.cursor()
+    cursor.executescript(create_db)
 
     print colored("Importing file: {0}".format(infile), 'green')
-    report = NmapParser.parse_fromfile(infile)
-    for host in report.hosts:
-        print colored("importing host: {0}".format(host.address), 'blue')
-        insert(conn, host)
-        conn.commit()
+    try:
+        report = NmapParser.parse_fromfile(infile)
+        report_cmd = "INSERT INTO scan (commandline, hosts_total, hosts_up, hosts_down) VALUES (?,?,?,?);"
+        report_values = (report.commandline, report.hosts_total, report.hosts_up, report.hosts_down)
+        cursor.execute(report_cmd, report_values)
+        scan_id = cursor.lastrowid
+        for host in report.hosts:
+            print colored("importing host: {0}".format(host.address), 'blue')
+            insert(conn, host, scan_id=scan_id)
+            conn.commit()
+    except Exception as e:
+        print colored(e.message, 'red')
 
     conn.close()
+
 
 def main(db, files, dir):
     if files is not None:
