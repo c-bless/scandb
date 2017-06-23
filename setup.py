@@ -14,7 +14,7 @@ setup(
     version='0.1.0',
     author='Christoph Bless',
     author_email='bitbucket@cbless.de',
-    url='',
+    url='https://bitbucket.org/cbless/scandb',
     license=' GPLv3',
     description=('TODO'),
     long_description=long_description,
