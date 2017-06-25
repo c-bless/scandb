@@ -1,3 +1,21 @@
+import hashlib
+
+BUF_SIZE = 65536
+
+
+def hash_file(filename):
+
+    sha512 = hashlib.sha512()
+
+    with open(filename, 'rb') as f:
+        while True:
+            data = f.read(BUF_SIZE)
+            if not data:
+                break
+            sha512.update(data)
+
+    return sha512.hexdigest()
+
 
 def get_open_ports(host, protocol='tcp'):
     ports = []
@@ -49,12 +67,15 @@ def get_hostname(host):
 def get_best_os_match(host):
     os_matches = host.os_match_probabilities()
     os = ""
+    os_gen = ""
     if len(os_matches) > 0:
         os = os_matches[0].name
-    return os
+        if len(os_matches[0].osclasses) >0:
+            os_gen = os_matches[0].osclasses[0].osgen
+    return os, os_gen
 
 
 def host_to_tupel(host):
     hostname = get_hostname(host)
-    os = get_best_os_match(host)
-    return host.address, hostname, os, host.status
+    os, os_gen = get_best_os_match(host)
+    return host.address, hostname, os, os_gen, host.status
