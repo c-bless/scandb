@@ -4,7 +4,11 @@ BUF_SIZE = 65536
 
 
 def hash_file(filename):
-
+    """
+    Calculate a SHA-512 hash from the given file.
+    :param filename: File from which the hash should be calculated
+    :return:
+    """
     sha512 = hashlib.sha512()
 
     with open(filename, 'rb') as f:

@@ -44,7 +44,17 @@ class Port(BaseModel):
 
 class Vuln(BaseModel):
     host = ForeignKeyField(Host, related_name="vuln_on_host")
-    name = TextField(null=False)
+    description = TextField(null=False)
+    synopsis = TextField(null=True)
+    port = IntegerField(null=False)
+    protocol = TextField(null=False)
+    service = TextField(null=False)
+    solution = TextField(null=True)
+    severity = TextField(null=True)
+    xref = TextField(null=True)
+    info = TextField(null=True)
+    plugin = TextField(null=True)
+    risk = TextField(null=True)
 
 
 def init_db(db):
