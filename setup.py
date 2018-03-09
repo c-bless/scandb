@@ -23,7 +23,7 @@ setup(
         'termcolor',
         'python-libnmap',
         'python-libnessus',
-        'sqlalchemy'
+        'peewee'
     ],
     entry_points = {
         "console_scripts": [
