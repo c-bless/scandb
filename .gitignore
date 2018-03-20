@@ -61,3 +61,6 @@ target/
 
 # Pycharm
 .idea
+
+temporary SQLite-Databases
+*.sqlite
