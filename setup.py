@@ -10,7 +10,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 setup(
     name='scandb',
-    version='0.2.0',
+    version='0.3.0',
     author='Christoph Bless',
     author_email='bitbucket@cbless.de',
     url='https://bitbucket.org/cbless/scandb',
@@ -28,7 +28,9 @@ setup(
     entry_points = {
         "console_scripts": [
             "nmap2scandb = scandb.nmap:nmap2scandb",
-            "nessus2scandb = scandb.nessus:nessus2scandb"
+            "nessus2scandb = scandb.nessus:nessus2scandb",
+            "scandb2hostlist = scandb.exporter:scandb2hostlist",
+            "scandb2hostportlist = scandb.exporter:scandb2hostportlist"
         ]
     }
 )
