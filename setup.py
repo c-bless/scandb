@@ -30,7 +30,8 @@ setup(
             "nmap2scandb = scandb.nmap:nmap2scandb",
             "nessus2scandb = scandb.nessus:nessus2scandb",
             "scandb2hostlist = scandb.exporter:scandb2hostlist",
-            "scandb2hostportlist = scandb.exporter:scandb2hostportlist"
+            "scandb2hostportlist = scandb.exporter:scandb2hostportlist",
+            "scandb-analyzer = scandb.analyzer:analyzer"
         ]
     }
 )

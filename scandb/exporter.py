@@ -4,16 +4,15 @@ import os
 
 
 host_port_list = """
-    select address , group_concat(port), protocol from port where protocol = 'tcp' and status = ? group by address
+    select address , group_concat(port), protocol from port where protocol = 'tcp' and status='open' group by address
     union
-    select address , group_concat(port), protocol from port where protocol = 'udp' and status = ? group by address;
-    """
+    select address , group_concat(port), protocol from port where protocol = 'udp' and status='open' group by address;"""
 
 
-def gen_host_port_list(db, outfile, status="open"):
+def gen_host_port_list(db,outfile):
     conn = sqlite3.connect(db)
     cur = conn.cursor()
-    cur.execute(host_port_list, (status, status))
+    cur.execute(host_port_list)
     rows = cur.fetchall()
     with open(outfile,'w') as f:
         for r in rows:
@@ -47,10 +46,9 @@ def scandb2hostlist():
 def scandb2hostportlist():
     parser = argparse.ArgumentParser(description="")
     parser.add_argument("--db", type=str, required=False, default="scandb.sqlite")
-    parser.add_argument("--status", type=str, required=False, default="open")
     parser.add_argument("-o","--outfile", metavar="FILE", required=False, type=str, default="hostportlist.csv",
                         help="")
 
     args = parser.parse_args()
 
-    gen_host_port_list(args.db, args.outfile, args.status)
+    gen_host_port_list(args.db, args.outfile)

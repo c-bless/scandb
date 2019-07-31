@@ -10,7 +10,7 @@ def _nessus_host_to_dbhost(h, scan):
     """
     Create a database host object with the values from the nessus host object.
 
-    :param h: nmap host object
+    :param h: nessus host object
     :type h: libnessus.objects.reporthost.NessusReportHost
 
     :param scan: database scan object
@@ -63,32 +63,29 @@ def import_nessus_file(infile):
         report = NessusParser.parse_fromfile(infile)
         # calculate a SHA-512 hash. This is used to ensure that the file will not be imported more than once.
         sha512 = hash_file(infile)
-    except Exception as e:
-        # Invalid file format
-        print colored("[-] File cannot be imported : {0}".format(infile), 'red')
 
-    try:
         # create the database entry for the scan.
         scan = Scan(file_hash=sha512, name=report.name, type='nessus', start=report.started, end=report.endtime,
                     elapsed=report.elapsed, hosts_total=report.hosts_total)
         scan.save()
+
+        # import all hosts and ports present in the report
+        for h in report.hosts:
+            host = _nessus_host_to_dbhost(h, scan=scan)
+            host.save()
+            for v in h.get_report_items:
+                vuln = _nessus_vuln_to_dbvuln(v, host)
+                vuln.save()
+        print colored("[*] File imported. ", 'green')
     except peewee.IntegrityError as e:
         # This error is throw when the SHA-512 hash is already present in the database. Therefore the file cannot be
         # imported again.
         print colored("[-] File already imported: {0}".format(infile), 'red')
-        return
+        print colored("[-] {0}".format(e.message), 'red')
+    except Exception as e:
+        # Invalid file format
+        print colored("[-] {0}".format(e.message), 'red')
 
-    # import all hosts and ports present in the report
-    for h in report.hosts:
-        host = _nessus_host_to_dbhost(h, scan=scan)
-        host.save()
-        for v in h.get_report_items:
-            vuln = _nessus_vuln_to_dbvuln(v, host)
-            print vuln
-            vuln.save()
-
-
-    print colored("[*] File imported.", 'green')
 
 
 
@@ -114,21 +111,19 @@ def nessus2scandb():
     database = init_db(db)
 
     if filename is None and dir is None:
-        # either a filename or a directoy must be specified
+        # either a filename or a directory must be specified
         parser.print_usage()
         return
 
     if filename is not None:
         # import a single nessus XML-file
         for file in filename:
-            pass
             import_nessus_file(file)
     if dir is not None:
         # import several nmap XML-files within a directory
         for filename in os.listdir(dir):
             if not filename.endswith('.nessus'): continue
             fullname = os.path.join(dir, filename)
-            pass
             import_nessus_file(fullname)
 
     database.close()
