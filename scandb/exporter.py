@@ -27,8 +27,8 @@ def gen_host_list(db, status, delimiter):
     cur.execute("SELECT distinct address FROM host WHERE status like ? ;", (status,))
     rows = cur.fetchall()
     ips = [ x[0] for x in rows]
-    print(delimiter.join(ips))
     conn.close()
+    return ips
 
 
 def scandb2hostlist():
@@ -52,3 +52,4 @@ def scandb2hostportlist():
     args = parser.parse_args()
 
     gen_host_port_list(args.db, args.outfile)
+    print("Results written to : {0}".format(args.outfile))

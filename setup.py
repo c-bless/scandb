@@ -27,11 +27,9 @@ setup(
     ],
     entry_points = {
         "console_scripts": [
-            "nmap2scandb = scandb.nmap:nmap2scandb",
-            "nessus2scandb = scandb.nessus:nessus2scandb",
-            "scandb2hostlist = scandb.exporter:scandb2hostlist",
-            "scandb2hostportlist = scandb.exporter:scandb2hostportlist",
-            "scandb-analyzer = scandb.analyzer:analyzer"
+            "scandb-genhostportlist = scandb.exporter:scandb2hostportlist",
+            "scandb-analyzer = scandb.analyzer:analyzer",
+            "scandb-importer = scandb.importer:importer"
         ]
     }
 )
