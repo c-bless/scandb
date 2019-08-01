@@ -16,7 +16,7 @@ def import_nmap_file(infile):
     :return:
     """
     sha512 = ""
-    print colored("[*] Importing file: {0}".format(infile), 'green')
+    print(colored("[*] Importing file: {0}".format(infile), 'green'))
     try:
         report = NmapParser.parse_fromfile(infile) # read and parse the nmap XML file
         # calculate a SHA-512 hash. This is used to ensure that the file will not be imported more than once.
@@ -38,15 +38,15 @@ def import_nmap_file(infile):
                             status=state)
                 port.save()
 
-        print colored("[*] File imported. ",'green')
+        print(colored("[*] File imported. ",'green'))
 
     except peewee.IntegrityError as e:
         # This error is throw when the SHA-512 hash is already present in the database. Therefore the file cannot be
         # imported again.
-        print colored("[-] File already imported: {0}".format(infile), 'red')
+        print(colored("[-] File already imported: {0}".format(infile), 'red'))
     except Exception as e:
         # Invalid file format
-        print colored("[-] File cannot be imported : {0}".format(infile), 'red')
+        print(colored("[-] File cannot be imported : {0}".format(infile), 'red'))
 
 
 

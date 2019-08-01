@@ -27,7 +27,7 @@ def gen_host_list(db, status, delimiter):
     cur.execute("SELECT distinct address FROM host WHERE status like ? ;", (status,))
     rows = cur.fetchall()
     ips = [ x[0] for x in rows]
-    print delimiter.join(ips)
+    print(delimiter.join(ips))
     conn.close()
 
 

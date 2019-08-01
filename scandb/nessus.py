@@ -1,3 +1,4 @@
+from __future__ import print_function
 import argparse
 import os
 import peewee
@@ -58,7 +59,7 @@ def import_nessus_file(infile):
     :param infile: nessus XML-file to import
     :return:
     """
-    print colored("[*] Importing file: {0}".format(infile), 'green')
+    print(colored("[*] Importing file: {0}".format(infile), 'green'))
     try:
         report = NessusParser.parse_fromfile(infile)
         # calculate a SHA-512 hash. This is used to ensure that the file will not be imported more than once.
@@ -76,15 +77,15 @@ def import_nessus_file(infile):
             for v in h.get_report_items:
                 vuln = _nessus_vuln_to_dbvuln(v, host)
                 vuln.save()
-        print colored("[*] File imported. ", 'green')
+        print(colored("[*] File imported. ", 'green'))
     except peewee.IntegrityError as e:
         # This error is throw when the SHA-512 hash is already present in the database. Therefore the file cannot be
         # imported again.
-        print colored("[-] File already imported: {0}".format(infile), 'red')
-        print colored("[-] {0}".format(e.message), 'red')
+        print(colored("[-] File already imported: {0}".format(infile), 'red'))
+        print(colored("[-] {0}".format(e.message), 'red'))
     except Exception as e:
         # Invalid file format
-        print colored("[-] {0}".format(e.message), 'red')
+        print(colored("[-] {0}".format(e.message), 'red'))
 
 
 
