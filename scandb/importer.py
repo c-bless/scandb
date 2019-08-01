@@ -17,7 +17,7 @@ def importer():
     parser.add_argument("--file", metavar="FILE", type=str, default=None, nargs="*",
                         help="The nessus and/or nmap file(s)")
     parser.add_argument("--dir", metavar="DIR", type=str, default=None,
-                        help="Directory name with the nessus and/or nmap files to import")
+                        help="Directory name with nessus and/or nmap files")
     args = parser.parse_args()
 
     db = args.db

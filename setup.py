@@ -5,9 +5,11 @@ from os import path
 
 here = path.abspath(path.dirname(__file__))
 
+long_description = ""
 # Get the long description from the README file
 with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
+
 setup(
     name='scandb',
     version='0.3.1',
@@ -15,7 +17,7 @@ setup(
     author_email='bitbucket@cbless.de',
     url='https://bitbucket.org/cbless/scandb',
     license=' GPLv3',
-    description=('TODO'),
+    description=("Scripts to import nmap and nessus scans into an sqlite database."),
     long_description=long_description,
     packages=['scandb'],
     install_requires=[

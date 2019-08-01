@@ -4,9 +4,9 @@ import os
 
 
 host_port_list = """
-    select address , group_concat(port), protocol from port where protocol = 'tcp' and status='open' group by address
+    select address , group_concat(distinct port), protocol from port where protocol = 'tcp' and status='open' group by address
     union
-    select address , group_concat(port), protocol from port where protocol = 'udp' and status='open' group by address;"""
+    select address , group_concat(distinct port), protocol from port where protocol = 'udp' and status='open' group by address;"""
 
 
 def gen_host_port_list(db,outfile):
