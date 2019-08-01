@@ -11,7 +11,7 @@ def get_stats(db):
     return rows
 
 
-def gen_host_list(db, status):
+def get_host_list(db, status):
     conn = sqlite3.connect(db)
     cur = conn.cursor()
     cur.execute("SELECT distinct address FROM host WHERE status like ? ;", (status,))
@@ -21,7 +21,7 @@ def gen_host_list(db, status):
     return ips
 
 
-def gen_host_list_by_both(db, tcp, udp):
+def get_host_list_by_both(db, tcp, udp):
     conn = sqlite3.connect(db)
     cur = conn.cursor()
     sql = "SELECT distinct address FROM port WHERE port in ({seq_tcp}) and protocol = 'tcp' " \
@@ -35,7 +35,7 @@ def gen_host_list_by_both(db, tcp, udp):
     return ips
 
 
-def gen_host_list_by_udp(db, udp):
+def get_host_list_by_udp(db, udp):
     conn = sqlite3.connect(db)
     cur = conn.cursor()
     sql = "SELECT distinct address FROM port where port in ({seq_tcp}) and protocol = 'udp'".format(
@@ -47,7 +47,7 @@ def gen_host_list_by_udp(db, udp):
     return ips
 
 
-def gen_host_list_by_tcp(db, tcp):
+def get_host_list_by_tcp(db, tcp):
     conn = sqlite3.connect(db)
     cur = conn.cursor()
     sql = "SELECT distinct address FROM port where port in ({seq_tcp}) and protocol = 'tcp'".format(
@@ -70,6 +70,8 @@ def analyzer():
                         help="TCP ports")
     parser.add_argument("-u", "--udp", metavar="PORTS", required=False, type=str, default=None,
                         help="UDP ports")
+    parser.add_argument("-o", "--operation", metavar="UNION|INTERSECTION", required=False, type=str, default="UNION",
+                        help="Operation to combine the sets of TCP and UDP ports (default: UNION)")
     parser.add_argument("--list", required=False, action='store_true', default=False,
                         help="Generate a target list")
     parser.add_argument("-d", "--list-delimiter", required=False, default="\n",
@@ -98,14 +100,20 @@ def analyzer():
             print(fmt.format(id, start, end, elapsed, total, up, down, params))
 
     ips = []
-    if args.tcp is not None and args.udp is not None:
-        ips = gen_host_list_by_both(args.db, args.tcp.split(","), args.udp.split(","))
-    elif args.tcp is not None and args.udp is None:
-        ips = gen_host_list_by_tcp(args.db, args.tcp.split(","))
-    elif args.tcp is None and args.udp is not None:
-        ips = gen_host_list_by_udp(args.db, args.udp.split(","))
+    if args.tcp is None and args.udp is None:
+        ips = get_host_list(args.db, args.status)
     else:
-        ips = gen_host_list(args.db, args.status)
+        tcp_ports = []
+        udp_ports = []
+        if args.tcp is not None:
+            tcp_ports = get_host_list_by_tcp(args.db, args.tcp.split(","))
+        if args.udp is not None:
+            udp_ports = get_host_list_by_udp(args.db, args.udp.split(","))
+
+        if args.operation.upper() == 'INTERSECTION':
+            ips = set(tcp_ports).intersection(udp_ports)
+        else:
+            ips = set(tcp_ports).union(udp_ports)
 
     if args.list:
         print(args.list_delimiter.join(ips))

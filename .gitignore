@@ -64,3 +64,6 @@ target/
 
 temporary SQLite-Databases
 *.sqlite
+
+temporary CSV files
+*.csv
