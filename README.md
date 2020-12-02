@@ -27,28 +27,26 @@ optional arguments:
 This command can be used to display scan statistics or to generate target lists.
 
 ```
-$ scandb-analyzer -h
-usage: scandb-analyzer [-h] [--db DB] [--status STATUS] [--statistics]
-                       [-t PORTS] [-u PORTS] [-o UNION|INTERSECTION] [--list]
-                       [-d LIST_DELIMITER] [--list-file FILE]
+$ scandb-analyzer -h       
+usage: scandb-analyzer [-h] [--db DB] [--scan-statistics] [--vuln-statistics] [--port-statistics] [--status STATUS] [-t PORTS] [-u PORTS] [-o UNION|INTERSECTION] [--list] [-d LIST_DELIMITER] [--list-file FILE]
 
 optional arguments:
   -h, --help            show this help message and exit
   --db DB
+  --scan-statistics     Print statistics for each scan
+  --vuln-statistics     Print number of vulns foreach host.
+  --port-statistics     Print number of 'open' TCP and UDP ports foreach host.
   --status STATUS       Status string stored in database (default: up)
-  --statistics          Print statistics for each scan
   -t PORTS, --tcp PORTS
                         TCP ports
   -u PORTS, --udp PORTS
                         UDP ports
   -o UNION|INTERSECTION, --operation UNION|INTERSECTION
-                        Operation to combine the sets of TCP and UDP ports
-                        (default: UNION)
+                        Operation to combine the sets of TCP and UDP ports (default: UNION)
   --list                Generate a target list
   -d LIST_DELIMITER, --list-delimiter LIST_DELIMITER
                         Delimiter used to separate hosts in the list output
-  --list-file FILE      Generate a file with the targets instead of printing
-                        them to stdout
+  --list-file FILE      Generate a file with the targets instead of printing them to stdout
 ```
 
 Generate a list of all hosts (with status 'up'):
@@ -106,4 +104,12 @@ Results written to : hostportlist.csv
 192.168.1.1;53,80,443,5060,8181;tcp
 192.168.1.19;161;udp
 192.168.1.2;53,80,5060,8089;tcp
+```
+
+
+## scandb-genvulnstat
+This command creates a csv file with numbers of vulnerabilities per category and host.
+```
+$ scandb-genvulnstat
+Results written to : vulnstat.csv
 ```

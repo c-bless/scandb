@@ -11,6 +11,38 @@ def get_stats(db):
     return rows
 
 
+def get_vuln_stats(db):
+    sql = "SELECT address,\
+    COUNT(CASE WHEN severity = 4 THEN 1 END) as CRITICAL, \
+    COUNT(CASE WHEN severity = 3 THEN 1 END) as HIGH,\
+    COUNT(CASE WHEN severity = 2 THEN 1 END) as MEDIUM,\
+    COUNT(CASE WHEN severity = 1 THEN 1 END) as LOW,\
+    COUNT(CASE WHEN severity = 0 THEN 1 END) as INFO\
+    from \
+    ( select *  from host h left join vuln v on h.id = v.host_id )\
+    GROUP by address\
+	order by CRITICAL DESC, HIGH DESC, MEDIUM DESC, LOW DESC, INFO DESC;"
+    conn = sqlite3.connect(db)
+    cur = conn.cursor()
+    cur.execute(sql)
+    rows = cur.fetchall()
+    conn.close()
+    return rows
+
+
+def get_port_stats(db):
+    sql = "select address,\
+	COUNT(CASE WHEN protocol = 'tcp' THEN 1 END) as TCP,\
+	COUNT(CASE WHEN protocol = 'udp' THEN 1 END) as UDP\
+    from port\
+    GROUP by address"
+    conn = sqlite3.connect(db)
+    cur = conn.cursor()
+    cur.execute(sql)
+    rows = cur.fetchall()
+    conn.close()
+    return rows
+
 def get_host_list(db, status):
     conn = sqlite3.connect(db)
     cur = conn.cursor()
@@ -28,6 +60,7 @@ def get_host_list_by_both(db, tcp, udp):
           "or port in ({seq_udp})  and protocol ='udp'".format(
             seq_tcp=','.join(['?'] * len(tcp)),
             seq_udp=','.join(['?'] * len(udp)))
+    print (sql)
     cur.execute(sql, (tcp,udp,))
     rows = cur.fetchall()
     ips = [x[0] for x in rows]
@@ -38,8 +71,9 @@ def get_host_list_by_both(db, tcp, udp):
 def get_host_list_by_udp(db, udp):
     conn = sqlite3.connect(db)
     cur = conn.cursor()
-    sql = "SELECT distinct address FROM port where port in ({seq_tcp}) and protocol = 'udp'".format(
-            seq_tcp=','.join(['?'] * len(udp)))
+    sql = "SELECT distinct address FROM port where port in ({seq_udp}) and protocol = 'udp'".format(
+            seq_udp=','.join(['?'] * len(udp)))
+    print(sql)
     cur.execute(sql, udp)
     rows = cur.fetchall()
     ips = [x[0] for x in rows]
@@ -52,6 +86,7 @@ def get_host_list_by_tcp(db, tcp):
     cur = conn.cursor()
     sql = "SELECT distinct address FROM port where port in ({seq_tcp}) and protocol = 'tcp'".format(
         seq_tcp=','.join(['?'] * len(tcp)))
+    print(sql)
     cur.execute(sql, tcp)
     rows = cur.fetchall()
     ips = [x[0] for x in rows]
@@ -62,10 +97,14 @@ def get_host_list_by_tcp(db, tcp):
 def analyzer():
     parser = argparse.ArgumentParser(description="")
     parser.add_argument("--db", type=str, required=False, default="scandb.sqlite")
+    parser.add_argument("--scan-statistics", required=False, action='store_true', default=False,
+                        help="Print statistics for each scan")
+    parser.add_argument("--vuln-statistics", required=False, action='store_true', default=False,
+                        help="Print number of vulns foreach host.")
+    parser.add_argument("--port-statistics", required=False, action='store_true', default=False,
+                        help="Print number of 'open' TCP and UDP ports foreach host.")
     parser.add_argument("--status", type=str, required=False, default="up",
                         help="Status string stored in database (default: up)")
-    parser.add_argument("--statistics", required=False, action='store_true', default=False,
-                        help="Print statistics for each scan")
     parser.add_argument("-t", "--tcp", metavar="PORTS", required=False, type=str, default=None,
                         help="TCP ports")
     parser.add_argument("-u", "--udp", metavar="PORTS", required=False, type=str, default=None,
@@ -80,7 +119,10 @@ def analyzer():
                         help="Generate a file with the targets instead of printing them to stdout")
     args = parser.parse_args()
 
-    do_stats = args.statistics
+    do_stats = False
+    if args.scan_statistics or args.vuln_statistics or args.port_statistics:
+        do_stats = True
+
     do_list_gen = True
 
     if not args.list and args.list_file is None:
@@ -91,15 +133,33 @@ def analyzer():
         parser.print_usage()
         return
 
-    if args.statistics:
+    if args.scan_statistics:
         stats = get_stats(args.db)
-        fmt = '{0:>10}{1:>15}{2:>15}{3:>12}{4:>12}{5:>12}{6:>12}{7:50}'
+        fmt = '{0:>10}{1:>15}{2:>15}{3:>12}{4:>12}{5:>12}{6:>15}{7:50}'
         print(fmt.format("scan id", "Start", "End", "Elapsed", "Hosts total", "Hosts up", "Hosts down", "Parameters"))
         for s in stats:
+            print(s)
             id, start, end, elapsed, total, up, down, params = (s)
             print(fmt.format(id, start, end, elapsed, total, up, down, params))
 
+    if args.vuln_statistics:
+        stats = get_vuln_stats(args.db)
+        fmt = '{0:>20}{1:>15}{2:>15}{3:>15}{4:>15}{5:>15}'
+        print(fmt.format("Address", "Critical", "High", "Medium", "Low", "Info"))
+        for s in stats:
+            address, c, h, m, l, i = (s)
+            print(fmt.format(address,c,h,m,l,i))
+
+    if args.port_statistics:
+        stats = get_port_stats(args.db)
+        fmt = '{0:>20}{1:>15}{2:>15}'
+        print(fmt.format("Address", "TCP", "UDP"))
+        for s in stats:
+            address, tcp, udp = (s)
+            print(fmt.format(address, tcp, udp))
+
     ips = []
+
     if args.tcp is None and args.udp is None:
         ips = get_host_list(args.db, args.status)
     else:
@@ -119,7 +179,7 @@ def analyzer():
         print(args.list_delimiter.join(ips))
 
     if args.list_file:
-        with open(args.list, 'w') as f:
+        with open(args.list_file, 'w') as f:
             f.write("\n".join(ips))
 
 

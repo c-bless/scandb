@@ -1,0 +1,5 @@
+jsonpickle==1.4.2
+peewee==3.14.0
+python-libnessus==1.0.0.10
+python-libnmap==0.7.0
+termcolor==1.1.0

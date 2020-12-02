@@ -12,13 +12,14 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='scandb',
-    version='0.3.1',
+    version='0.3.3',
     author='Christoph Bless',
     author_email='bitbucket@cbless.de',
     url='https://bitbucket.org/cbless/scandb',
     license=' GPLv3',
     description=("Scripts to import nmap and nessus scans into an sqlite database."),
     long_description=long_description,
+    long_description_content_type='text/markdown',
     packages=['scandb'],
     install_requires=[
         'argparse',
@@ -30,6 +31,7 @@ setup(
     entry_points = {
         "console_scripts": [
             "scandb-genhostportlist = scandb.exporter:scandb2hostportlist",
+            "scandb-genvulnstat = scandb.exporter:scandb2vulnstats",
             "scandb-analyzer = scandb.analyzer:analyzer",
             "scandb-importer = scandb.importer:importer"
         ]
