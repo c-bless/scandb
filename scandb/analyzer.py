@@ -19,7 +19,7 @@ def get_vuln_stats(db):
     COUNT(CASE WHEN severity = 1 THEN 1 END) as LOW,\
     COUNT(CASE WHEN severity = 0 THEN 1 END) as INFO\
     from \
-    ( select *  from host h left join vuln v on h.id = v.host_id )\
+    ( select distinct address, plugin, severity   from host h left join vuln v on h.id = v.host_id )\
     GROUP by address\
 	order by CRITICAL DESC, HIGH DESC, MEDIUM DESC, LOW DESC, INFO DESC;"
     conn = sqlite3.connect(db)
