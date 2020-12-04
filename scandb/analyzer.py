@@ -2,46 +2,8 @@ import argparse
 import sqlite3
 
 
-def get_stats(db):
-    conn = sqlite3.connect(db)
-    cur = conn.cursor()
-    cur.execute("SELECT id,start,end,elapsed,hosts_total,hosts_up,hosts_down,name FROM scan")
-    rows = cur.fetchall()
-    conn.close()
-    return rows
 
 
-def get_vuln_stats(db):
-    sql = "SELECT address,\
-    COUNT(CASE WHEN severity = 4 THEN 1 END) as CRITICAL, \
-    COUNT(CASE WHEN severity = 3 THEN 1 END) as HIGH,\
-    COUNT(CASE WHEN severity = 2 THEN 1 END) as MEDIUM,\
-    COUNT(CASE WHEN severity = 1 THEN 1 END) as LOW,\
-    COUNT(CASE WHEN severity = 0 THEN 1 END) as INFO\
-    from \
-    ( select distinct address, plugin, severity   from host h left join vuln v on h.id = v.host_id )\
-    GROUP by address\
-	order by CRITICAL DESC, HIGH DESC, MEDIUM DESC, LOW DESC, INFO DESC;"
-    conn = sqlite3.connect(db)
-    cur = conn.cursor()
-    cur.execute(sql)
-    rows = cur.fetchall()
-    conn.close()
-    return rows
-
-
-def get_port_stats(db):
-    sql = "select address,\
-	COUNT(CASE WHEN protocol = 'tcp' THEN 1 END) as TCP,\
-	COUNT(CASE WHEN protocol = 'udp' THEN 1 END) as UDP\
-    from port\
-    GROUP by address"
-    conn = sqlite3.connect(db)
-    cur = conn.cursor()
-    cur.execute(sql)
-    rows = cur.fetchall()
-    conn.close()
-    return rows
 
 def get_host_list(db, status):
     conn = sqlite3.connect(db)
