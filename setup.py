@@ -31,8 +31,8 @@ setup(
     entry_points = {
         "console_scripts": [
             "scandb-genhostportlist = scandb.exporter:scandb2hostportlist",
-            "scandb-genvulnstat = scandb.exporter:scandb2vulnstats",
-            "scandb-analyzer = scandb.analyzer:analyzer",
+            "scandb-vulns = scandb.vulns:vulns_cli",
+            "scandb-services = scandb.services:services_cli",
             "scandb-statistics = scandb.statistics:statistics_cli",
             "scandb-importer = scandb.importer:importer"
         ]
