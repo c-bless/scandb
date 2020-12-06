@@ -134,6 +134,25 @@ def handle_port_stats(db, outfile, write_file = False, delimeter=";"):
             f.write("\n".join(results_csv))
 
 
+host_port_list = """
+    select address , group_concat(distinct port), protocol from port where protocol = 'tcp' and status='open' group by address
+    union
+    select address , group_concat(distinct port), protocol from port where protocol = 'udp' and status='open' group by address;"""
+
+
+def gen_host_port_list(db,outfile):
+    conn = sqlite3.connect(db)
+    cur = conn.cursor()
+    cur.execute(host_port_list)
+    rows = cur.fetchall()
+    filename = "{0}-hostportlist.csv".format(outfile)
+    with open(filename,'w') as f:
+        for r in rows:
+            f.write(";".join(r))
+            f.write("\n")
+    conn.close()
+
+
 def statistics_cli():
     parser = argparse.ArgumentParser(description="")
     parser.add_argument("--db", type=str, required=False, default="scandb.sqlite")
@@ -143,6 +162,8 @@ def statistics_cli():
                         help="Print number of vulns foreach host.")
     parser.add_argument("-p", "--port-statistics", required=False, action='store_true', default=False,
                         help="Print number of 'open' TCP and UDP ports foreach host.")
+    parser.add_argument("--host-portlist", required=False, action='store_true', default=False,
+                        help="generate a csv with a list of TCP and UDP Ports per host")
     parser.add_argument("-d", "--delimeter", required=False, type=str,  default=";", help="Delimeter for CSV files.")
     parser.add_argument("-o", "--outfile", required=False, default="scandb", help="Prefix for output files.")
     parser.add_argument("-w", "--write-file", required=False, action='store_true', default=False,
@@ -154,7 +175,7 @@ def statistics_cli():
     if args.scan_statistics or args.vuln_statistics or args.port_statistics:
         do_stats = True
 
-    if not do_stats:
+    if not do_stats and not args.host_portlist:
         parser.print_usage()
         return
 
@@ -167,3 +188,5 @@ def statistics_cli():
     if args.port_statistics:
         handle_port_stats(args.db, args.outfile, args.write_file, args.delimeter)
 
+    if args.host_portlist:
+        gen_host_port_list(args.db, args.outfile)
