@@ -121,22 +121,18 @@ def compare_cli():
     parser.add_argument("--db2", type=str, required=False, default="scandb-old.sqlite")
     parser.add_argument("-v", "--vuln-statistics", required=False, action='store_true', default=False,
                         help="Print number of vulns foreach host and db.")
-    parser.add_argument("-p", "--port-statistics", required=False, action='store_true', default=False,
-                        help="Print number of 'open' TCP and UDP ports foreach host and db.")
+    #parser.add_argument("-p", "--port-statistics", required=False, action='store_true', default=False,
+    #                    help="Print number of 'open' TCP and UDP ports foreach host and db.")
     parser.add_argument("--host-portlist", required=False, action='store_true', default=False,
                         help="generate a csv with a list of TCP and UDP Ports per host and db")
     parser.add_argument("-o", "--outfile", required=False, default="scandb", help="Prefix for output files.")
     args = parser.parse_args()
 
-    do_stats = False
-    if args.vuln_statistics or args.port_statistics:
-        do_stats = True
-
     if args.vuln_statistics:
         handle_vuln_stats(args.db1, args.db2, args.outfile)
 
-    if args.port_statistics:
-        pass
+    #if args.port_statistics:
+    #    pass
 
     if args.host_portlist:
         handle_service_stats(args.db1, args.db2, args.outfile)
