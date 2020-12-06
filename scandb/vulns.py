@@ -34,9 +34,8 @@ def vulns_cli():
     parser.add_argument("--db", type=str, required=False, default="scandb.sqlite")
     parser.add_argument("--min-severity", type=int, required=False, default=0,
                         help="Minimum severity level (default: 0)")
-    parser.add_argument("--filter-by", metavar="CVE", required=False,
-                        choices=['cve', 'plugin-id', 'plugin-name', 'description'],
-                        default='description', help="Filter hosts affected by an specific CVE Number")
+    parser.add_argument("--filter-by", required=False, choices=['cve', 'plugin-id', 'plugin-name', 'description'],
+                        default='description', help="Filter hosts by the given filter. The search value is specified with option --search. The following fields can be used as filter 'cve', 'plugin-id', 'plugin-name', 'description")
     parser.add_argument("--search", metavar="SEARCH-Term", required=True, type=str,
                         help="Search term used for querying the database. The type of the search field can be selected "
                              "with the parameter --filter-by")

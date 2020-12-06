@@ -150,6 +150,7 @@ def gen_host_port_list(db,outfile):
         for r in rows:
             f.write(";".join(r))
             f.write("\n")
+    print ("Results written to : {0}".format(filename))
     conn.close()
 
 
