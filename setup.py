@@ -12,7 +12,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='scandb',
-    version='0.4.0',
+    version='0.4.1',
     author='Christoph Bless',
     author_email='bitbucket@cbless.de',
     url='https://bitbucket.org/cbless/scandb',
@@ -33,7 +33,8 @@ setup(
             "scandb-vulns = scandb.vulns:vulns_cli",
             "scandb-services = scandb.services:services_cli",
             "scandb-statistics = scandb.statistics:statistics_cli",
-            "scandb-importer = scandb.importer:importer"
+            "scandb-importer = scandb.importer:importer",
+            "scandb-compare = scandb.compare:compare_cli"
         ]
     }
 )
