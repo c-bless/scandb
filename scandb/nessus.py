@@ -47,7 +47,7 @@ def _nessus_vuln_to_dbvuln(v, host):
     """
     vuln = Vuln(host=host, description=v.description, synopsis=v.synopsis, port=v.port, protocol=v.protocol,
                 service=v.service, solution=v.solution, severity=v.severity, xref=v.get_vuln_xref, info=v.get_vuln_info,
-                plugin=v.get_vuln_plugin, risk=v.get_vuln_risk)
+                plugin=v.get_vuln_plugin, plugin_id=v.plugin_id, plugin_name=v.plugin_name, risk=v.get_vuln_risk)
     return vuln
 
 

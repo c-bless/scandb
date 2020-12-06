@@ -53,6 +53,8 @@ class Vuln(BaseModel):
     severity = TextField(null=True)
     xref = TextField(null=True)
     info = TextField(null=True)
+    plugin_id = TextField(null=False)
+    plugin_name = TextField(null=False)
     plugin = TextField(null=True)
     risk = TextField(null=True)
 
