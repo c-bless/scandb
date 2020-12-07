@@ -168,3 +168,24 @@ Select hosts that are affected by a vulnerability with Plugin-ID 48243 and displ
       192.168.100.111             80            tcp              0          48243PHP Version Detection
       192.168.100.122            443            tcp              0          48243PHP Version Detection
 ```
+
+## scandb-compare
+This command can be used to compare two scandb database instances (databases must be created with scandb v0.4.0 or 
+a later version). 
+```
+$   scandb-compare -h
+usage: scandb-compare [-h] [--db1 DB1] [--db2 DB2] [-v] [-p] [--host-portlist] [-o OUTFILE]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --db1 DB1
+  --db2 DB2
+  -v, --vuln-statistics
+                        Print number of vulns foreach host and db.
+  -p, --port-statistics
+                        Print number of 'open' TCP and UDP ports foreach host and db.
+  --host-portlist       generate a csv with a list of TCP and UDP Ports per host and db
+  -o OUTFILE, --outfile OUTFILE
+                        Prefix for output files.
+
+```
