@@ -3,12 +3,13 @@ import sqlite3
 
 from scandb.statistics import get_vuln_stats
 from scandb.statistics import host_port_list
+from scandb.statistics import get_port_stats
 
 SQL_ADDR_FROM_HOSTS = "SELECT distinct address from host where status = 'up'"
 host_port_list = """
-    select address , group_concat(distinct port), protocol from port where protocol = 'tcp' and status='open' group by address
+    select address , group_concat(distinct port || '(' || service || ')'), protocol from port where protocol = 'tcp' and status='open' group by address
     union
-    select address , group_concat(distinct port), protocol from port where protocol = 'udp' and status='open' group by address;"""
+    select address , group_concat(distinct port || '(' || service || ')'), protocol from port where protocol = 'udp' and status='open' group by address;"""
 
 
 
@@ -51,7 +52,7 @@ def handle_vuln_stats(db1, db2, outfile="scandb"):
         result[ip]['db2']['low'] = l
         result[ip]['db2']['info'] = i
 
-    outstr = ['Address;Critical-DB1;Critical-DB2;HIGH-DB1;HIGH-DB2;MEDIUM-DB1;MEDIUM-DB2;LOW-DB1;LOW-DB2;INFO-DB1;INFO-DB2']
+    outstr = ['Address;Critical-DB1;HIGH-DB1;MEDIUM-DB1;LOW-DB1;INFO-DB1;Critical-DB2;HIGH-DB2;MEDIUM-DB2;LOW-DB2;INFO-DB2']
     fmt = "{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10}"
     for ip in result:
         c1 = result[ip]['db1']['critical']
@@ -70,7 +71,6 @@ def handle_vuln_stats(db1, db2, outfile="scandb"):
     with open(filename, "w") as f:
         f.write("\n".join(outstr))
     print(" Result written to file: {0}".format(filename))
-
 
 
 def handle_service_stats(db1, db2, outfile="scandb"):
@@ -115,14 +115,54 @@ def handle_service_stats(db1, db2, outfile="scandb"):
         f.write("\n".join(outstr))
     print(" Result written to file: {0}".format(filename))
 
+
+def handle_port_stats(db1, db2, outfile="scandb"):
+
+    result = {}
+    addresses_db1 = [ x[0] for x in run_query(db1, SQL_ADDR_FROM_HOSTS)]
+    addresses_db2 = [ x[0] for x in run_query(db2, SQL_ADDR_FROM_HOSTS)]
+    addresses = set(addresses_db1).union(addresses_db2)
+
+    # prepare a dictionary with all ip addresses that exist in one of the databases
+    for ip in addresses:
+        result[ip] = {'db1': {'tcp': 0 , 'udp': 0},
+                      'db2': {'tcp': 0, 'udp': 0}}
+
+    stats_db1 = get_port_stats(db1)
+    for i in stats_db1:
+        ip , tcp, udp = i
+        result[ip]['db1']['tcp'] = tcp
+        result[ip]['db1']['udp'] = udp
+
+    stats_db2 = get_port_stats(db2)
+    for i in stats_db2:
+        ip, tcp, udp = i
+        result[ip]['db2']['tcp'] = tcp
+        result[ip]['db2']['udp'] = udp
+
+    outstr = ['Address;tcp-db1;udp-db1;tcp-db2;udp-db2']
+    fmt = "{0};{1};{2};{3};{4}"
+    for ip in result:
+        t1 = result[ip]['db1']['tcp']
+        u1 = result[ip]['db1']['udp']
+        t2 = result[ip]['db2']['tcp']
+        u2 = result[ip]['db2']['udp']
+        outstr.append(fmt.format(ip, t1, u1, t2, u2, ))
+
+    filename = "{0}-port-statistics-db1-db2.csv".format(outfile)
+    with open(filename, "w") as f:
+        f.write("\n".join(outstr))
+    print(" Result written to file: {0}".format(filename))
+
+
 def compare_cli():
     parser = argparse.ArgumentParser(description="")
     parser.add_argument("--db1", type=str, required=False, default="scandb.sqlite")
     parser.add_argument("--db2", type=str, required=False, default="scandb-old.sqlite")
     parser.add_argument("-v", "--vuln-statistics", required=False, action='store_true', default=False,
                         help="Print number of vulns foreach host and db.")
-    #parser.add_argument("-p", "--port-statistics", required=False, action='store_true', default=False,
-    #                    help="Print number of 'open' TCP and UDP ports foreach host and db.")
+    parser.add_argument("-p", "--port-statistics", required=False, action='store_true', default=False,
+                        help="Print number of 'open' TCP and UDP ports foreach host and db.")
     parser.add_argument("--host-portlist", required=False, action='store_true', default=False,
                         help="generate a csv with a list of TCP and UDP Ports per host and db")
     parser.add_argument("-o", "--outfile", required=False, default="scandb", help="Prefix for output files.")
@@ -131,8 +171,8 @@ def compare_cli():
     if args.vuln_statistics:
         handle_vuln_stats(args.db1, args.db2, args.outfile)
 
-    #if args.port_statistics:
-    #    pass
+    if args.port_statistics:
+        handle_port_stats(args.db1, args.db2, args.outfile)
 
     if args.host_portlist:
         handle_service_stats(args.db1, args.db2, args.outfile)
