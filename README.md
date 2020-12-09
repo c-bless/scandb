@@ -4,6 +4,7 @@ The following console commands are available after installation:
 - scandb-services
 - scandb-vulns
 - scandb-statistics
+- scandb-compare
 
 ## Installation
 The tool has been published to pypi and can be installed via *pip*.
@@ -138,21 +139,22 @@ The content of the file scandb-hostportlist.csv will looks like this.
 ## scandb-vulns
 This command can be used to generate target lists based on vulnerability filters.
 ```
-$   scandb-vulns -h                                                                                           
-usage: scandb-vulns [-h] [--db DB] [--min-severity MIN_SEVERITY] [--filter-by {cve,plugin-id,plugin-name,description}] --search SEARCH-Term --list {ips,details} [-d LIST_DELIMITER] [--list-file FILE]
+$    scandb-vulns -h
+usage: scandb-vulns [-h] [--db DB] [--min-severity MIN_SEVERITY] [--filter-by {cve,plugin-id,plugin-name,description,ip}] [--search SEARCH-Term] [--list {ips,details}] [-d LIST_DELIMITER] [--list-file FILE]
 
 optional arguments:
   -h, --help            show this help message and exit
   --db DB
   --min-severity MIN_SEVERITY
                         Minimum severity level (default: 0)
-  --filter-by {cve,plugin-id,plugin-name,description}
-                        Filter hosts by the given filter. The search value is specified with option --search. The following fields can be used as filter 'cve', 'plugin-id', 'plugin-name', 'description
+  --filter-by {cve,plugin-id,plugin-name,description,ip}
+                        Filter hosts by the given filter. The search value is specified with option --search. The following fields can be used as filter 'cve', 'plugin-id', 'plugin-name', 'description', 'ip'. (Note: The option 'ip' returns just the ip itself, when '
+                        --list ips' is selected and a vulnerability was detected for that ip, otherwise the result is empty.)
   --search SEARCH-Term  Search term used for querying the database. The type of the search field can be selected with the parameter --filter-by
-  --list {ips,details}  Generate a target list of ip addresses when selecting 'ips' or display the columnsAddress,Port,Protocol,Severity,Plugin-ID,Plugin-Name
+  --list {ips,details}  Generate a target list of ip addresses when selecting 'ips' or display the columns Address,Port,Protocol,Severity,Plugin-ID,Plugin-Name
   -d LIST_DELIMITER, --list-delimiter LIST_DELIMITER
                         Delimiter used to separate hosts in the list output. Only when --list ips is used.
-  --list-file FILE      Generate a file with the targets instead of printing them to stdout
+  --list-file FILE      Generate a file with the results instead of printing them to stdout. Incase of '--list ips' is selected the file contains a list of ip address (one per line), in case of '--list details' it will be a csv file
 ```
 
 Select hosts that are affected by a cve starting with CVE-2015- and display only the ip address. 
