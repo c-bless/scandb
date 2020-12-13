@@ -56,6 +56,8 @@ class Vuln(BaseModel):
     plugin_id = TextField(null=False)
     plugin_name = TextField(null=False)
     plugin = TextField(null=True)
+    plugin_family = TextField(null=True)
+    plugin_output = TextField(null=True)
     risk = TextField(null=True)
 
 

@@ -45,9 +45,17 @@ def _nessus_vuln_to_dbvuln(v, host):
     :type v: libnessus.objects.reportitem.NessusReportItem
     :return:
     """
+    output = ""
+    family = ""
+    plugin = v.get_vuln_plugin
+    if 'plugin_output' in plugin:
+        output = plugin['plugin_output']
+    if 'plugin_family' in plugin:
+        family = plugin['pluginFamily']
     vuln = Vuln(host=host, description=v.description, synopsis=v.synopsis, port=v.port, protocol=v.protocol,
                 service=v.service, solution=v.solution, severity=v.severity, xref=v.get_vuln_xref, info=v.get_vuln_info,
-                plugin=v.get_vuln_plugin, plugin_id=v.plugin_id, plugin_name=v.plugin_name, risk=v.get_vuln_risk)
+                plugin=v.get_vuln_plugin, plugin_id=v.plugin_id, plugin_family = family, plugin_output=output,
+                plugin_name=v.plugin_name, risk=v.get_vuln_risk)
     return vuln
 
 
