@@ -9,7 +9,7 @@ from scandb.models import Scan, Host, Port, init_db
 
 def import_nmap_file(infile):
     """
-    This function is responsable for importing the given file.  For each file a SHA-512 hash is calculated to ensure
+    This function is responsible for importing the given file.  For each file a SHA-512 hash is calculated to ensure
     that the file is only imported once.
 
     :param infile: nmap XML-file to import

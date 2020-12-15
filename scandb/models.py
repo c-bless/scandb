@@ -67,3 +67,4 @@ def init_db(db):
     database.connect()
     database.create_tables(models=[Scan, Host, Port, Vuln], safe=True)
     return database
+

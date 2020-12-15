@@ -1,0 +1,69 @@
+import json
+
+def xref2cve(xref):
+    tmp = json.loads(xref.replace("'", "\""))
+    cve = ""
+    if 'cve' in tmp:
+        cve = ",".join(tmp['cve'])
+    return cve
+
+class ReportVuln(object):
+
+    def __init__(self, address ="", description ="", synopsis="", port="", protocol="", service="", solution="",
+                 severity="", xref="", info="", plugin_id="", plugin_name="", plugin="", plugin_family="",
+                 plugin_output="",  risk=""):
+        self.address = address
+        self.description = description
+        self.synopsis = synopsis
+        self.port = port
+        self.protocol = protocol
+        self.service = service
+        self.solution = solution
+        self.severity = severity
+        self.xref = xref
+        self.cve = xref2cve(xref)
+        self.info = info
+        self.plugin_id = plugin_id
+        self.plugin_name = plugin_name
+        self.plugin = plugin
+        self.plugin_family = plugin_family
+        self.plugin_output = plugin_output
+        self.risk = risk
+
+
+class ReportVulnPlugin(object):
+    """
+    Subset of fields of the ReportVulns class. Used for the vulns_by_plugin list when generating the report. The
+    following fields are missing compared to ReportVulns: plugin_output, address, port, protocol, service. Instead of
+    these files a list of address objects is used that provide this information.
+    """
+    def __init__(self, addresses = [], description ="", synopsis="", solution="", severity="", xref="", info="",
+                 plugin_id="", plugin_name="", plugin="", plugin_family="", risk=""):
+        self.addresses = addresses
+        self.description = description
+        self.synopsis = synopsis
+        self.solution = solution
+        self.severity = severity
+        self.xref = xref
+        self.info = info
+        self.cve = xref2cve(xref)
+        self.plugin_id = plugin_id
+        self.plugin_name = plugin_name
+        self.plugin = plugin
+        self.plugin_family = plugin_family
+        self.risk = risk
+
+
+class ReportVulnAddress(object):
+    def __init__(self, address ="", port="", protocol="", service="", plugin_output=""):
+        self.address = address
+        self.port = port
+        self.protocol = protocol
+        self.service = service
+        self.plugin_output = plugin_output
+
+
+class ReportVulnByAddressList(object):
+    def __init__(self, address ="", vulns = []):
+        self.address = address
+        self.vulns = vulns

@@ -17,10 +17,10 @@ setup(
     author_email='bitbucket@cbless.de',
     url='https://bitbucket.org/cbless/scandb',
     license=' GPLv3',
-    description=("Scripts to import nmap and nessus scans into a sqlite database."),
+    description=("Scripts to import and analyze nmap and nessus scans."),
     long_description=long_description,
     long_description_content_type='text/markdown',
-    packages=['scandb'],
+    packages=['scandb','scandb.report'],
     install_requires=[
         'argparse',
         'termcolor',
@@ -36,7 +36,7 @@ setup(
             "scandb-statistics = scandb.statistics:statistics_cli",
             "scandb-importer = scandb.importer:importer",
             "scandb-compare = scandb.compare:compare_cli",
-            "scandb-report = scandb.report:report_cli"
+            "scandb-report = scandb.report.cli:report_cli"
         ]
     }
 )

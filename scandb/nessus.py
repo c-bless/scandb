@@ -40,10 +40,13 @@ def _nessus_host_to_dbhost(h, scan):
 
 def _nessus_vuln_to_dbvuln(v, host):
     """
+    This function creates a database model object (Vuln) and sets the attributes to values read from the given
+    NessusReportItem.
 
-    :param v:
+    :param v: The NesusReportItem
     :type v: libnessus.objects.reportitem.NessusReportItem
-    :return:
+    :return: New database model object
+    :rtype: scandb.models.Vuln
     """
     output = ""
     family = ""
@@ -51,7 +54,7 @@ def _nessus_vuln_to_dbvuln(v, host):
     if 'plugin_output' in plugin:
         output = plugin['plugin_output']
     if 'plugin_family' in plugin:
-        family = plugin['pluginFamily']
+        family = plugin['plugin_family']
     vuln = Vuln(host=host, description=v.description, synopsis=v.synopsis, port=v.port, protocol=v.protocol,
                 service=v.service, solution=v.solution, severity=v.severity, xref=v.get_vuln_xref, info=v.get_vuln_info,
                 plugin=v.get_vuln_plugin, plugin_id=v.plugin_id, plugin_family = family, plugin_output=output,
@@ -61,7 +64,7 @@ def _nessus_vuln_to_dbvuln(v, host):
 
 def import_nessus_file(infile):
     """
-    This function is responsable for importing the given file.  For each file a SHA-512 hash is calculated to ensure
+    This function is responsible for importing the given file.  For each file a SHA-512 hash is calculated to ensure
     that the file is only imported once.
 
     :param infile: nessus XML-file to import

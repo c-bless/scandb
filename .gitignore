@@ -67,3 +67,5 @@ temporary SQLite-Databases
 
 temporary CSV files
 *.csv
+/.~lock.scandb-report.docx#
+/scandb-report.docx
