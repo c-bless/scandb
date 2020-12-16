@@ -67,3 +67,23 @@ class ReportVulnByAddressList(object):
     def __init__(self, address ="", vulns = []):
         self.address = address
         self.vulns = vulns
+
+
+class ReportPort(object):
+    def __init__(self, port="", protocol="", service="", banner="", status=""):
+        self.port = port
+        self.protocol = protocol
+        self.service = service
+        self.banner = banner
+        self.status = status
+
+
+class ReportHost(object):
+    def __init__(self, address ="", hostname="", os ="", os_gen="", status="", tcp=[], udp=[]):
+        self.address = address
+        self.hostname = hostname
+        self.os = os
+        self.os_gen = os_gen
+        self.status = status
+        self.tcp = tcp
+        self.udp = udp

@@ -1,6 +1,5 @@
 from __future__ import print_function
-import argparse
-import os
+import json
 import peewee
 from libnessus.parser import NessusParser
 from termcolor import colored
@@ -53,12 +52,16 @@ def _nessus_vuln_to_dbvuln(v, host):
     plugin = v.get_vuln_plugin
     if 'plugin_output' in plugin:
         output = plugin['plugin_output']
-    if 'plugin_family' in plugin:
-        family = plugin['plugin_family']
+    if 'pluginFamily' in plugin:
+        family = plugin['pluginFamily']
+    info = json.dumps(v.get_vuln_info)
+    plugin = json.dumps(v.get_vuln_plugin)
+    xref = json.dumps(v.get_vuln_xref)
+    risk = json.dumps(v.get_vuln_risk)
     vuln = Vuln(host=host, description=v.description, synopsis=v.synopsis, port=v.port, protocol=v.protocol,
-                service=v.service, solution=v.solution, severity=v.severity, xref=v.get_vuln_xref, info=v.get_vuln_info,
-                plugin=v.get_vuln_plugin, plugin_id=v.plugin_id, plugin_family = family, plugin_output=output,
-                plugin_name=v.plugin_name, risk=v.get_vuln_risk)
+                service=v.service, solution=v.solution, severity=v.severity, xref=xref, info=info,
+                plugin=plugin, plugin_id=v.plugin_id, plugin_family = family, plugin_output=output,
+                plugin_name=v.plugin_name, risk=risk)
     return vuln
 
 

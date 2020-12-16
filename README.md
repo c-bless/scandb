@@ -5,6 +5,10 @@ The following console commands are available after installation:
 - scandb-vulns
 - scandb-statistics
 - scandb-compare
+- scandb-report
+
+## License
+This script is licensed under the GNU General Public License in version 3. See http://www.gnu.org/licenses/ for further details.
 
 ## Installation
 The tool has been published to pypi and can be installed via *pip*.
@@ -139,15 +143,15 @@ The content of the file scandb-hostportlist.csv will looks like this.
 ## scandb-vulns
 This command can be used to generate target lists based on vulnerability filters.
 ```
-$    scandb-vulns -h
-usage: scandb-vulns [-h] [--db DB] [--min-severity MIN_SEVERITY] [--filter-by {cve,plugin-id,plugin-name,description,ip}] [--search SEARCH-Term] [--list {ips,details}] [-d LIST_DELIMITER] [--list-file FILE]
+$    scandb-vulns -h                                                                                                                           
+usage: scandb-vulns [-h] [--db DB] [--min-severity MIN_SEVERITY] [--filter-by {cve,plugin-id,plugin-name,plugin-output,description,ip}] [--search SEARCH-Term] [--list {ips,details}] [-d LIST_DELIMITER] [--list-file FILE]
 
 optional arguments:
   -h, --help            show this help message and exit
   --db DB
   --min-severity MIN_SEVERITY
                         Minimum severity level (default: 0)
-  --filter-by {cve,plugin-id,plugin-name,description,ip}
+  --filter-by {cve,plugin-id,plugin-name,plugin-output,description,ip}
                         Filter hosts by the given filter. The search value is specified with option --search. The following fields can be used as filter 'cve', 'plugin-id', 'plugin-name', 'description', 'ip'. (Note: The option 'ip' returns just the ip itself, when '
                         --list ips' is selected and a vulnerability was detected for that ip, otherwise the result is empty.)
   --search SEARCH-Term  Search term used for querying the database. The type of the search field can be selected with the parameter --filter-by
@@ -190,4 +194,22 @@ optional arguments:
   -o OUTFILE, --outfile OUTFILE
                         Prefix for output files.
 
+```
+
+## scandb-report
+This command can be used to export vulnerabilities to a docx format based on custom templates (statistics and host/port lists will be added as well). 
+Examples can be found under:  https://bitbucket.org/cbless/scandb/src/master/examples/
+
+
+```
+$   scandb-report -h
+usage: scandb-report [-h] [--db DB] [--min-severity MIN_SEVERITY] [--template TEMPLATE] [--outfile OUTFILE]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --db DB
+  --min-severity MIN_SEVERITY
+                        Minimum severity level (default: 0)
+  --template TEMPLATE   Name of the template to render. Examples can be found under: https://bitbucket.org/cbless/scandb/src/master/examples/
+  --outfile OUTFILE     Name that is used for the generated report.
 ```

@@ -7,6 +7,7 @@ HOSTS_BY_CVE = "SELECT distinct address FROM vuln join host on vuln.host_id = ho
 HOSTS_BY_VULN_DESC = "SELECT distinct address FROM vuln join host on vuln.host_id = host.id WHERE description like ? and severity >= ?;"
 HOSTS_BY_PID = "SELECT distinct address FROM vuln join host on vuln.host_id = host.id WHERE plugin_id = ? and severity >= ?;"
 HOSTS_BY_PNAME = "SELECT distinct address FROM vuln join host on vuln.host_id = host.id WHERE plugin_name like ? and severity >= ?;"
+HOSTS_BY_POUTPUT = "SELECT distinct address FROM vuln join host on vuln.host_id = host.id WHERE plugin_output like ? and severity >= ?;"
 HOSTS_BY_IP = "SELECT distinct address FROM vuln join host on vuln.host_id = host.id WHERE address like ? and severity >= ?;"
 
 HOSTS_DETAILS_BY_SEVERITY = "SELECT distinct address,port,protocol,severity,plugin_id,plugin_name, description, solution, info, xref FROM vuln join host on vuln.host_id = host.id WHERE severity >= ?;"
@@ -14,6 +15,7 @@ HOSTS_DETAILS_BY_CVE = "SELECT distinct address,port,protocol,severity,plugin_id
 HOSTS_DETAILS_BY_VULN_DESC = "SELECT distinct address,port,protocol,severity,plugin_id,plugin_name, description, solution, info, xref FROM vuln join host on vuln.host_id = host.id WHERE description like ? and severity >= ?;"
 HOSTS_DETAILS_BY_PID = "SELECT distinct address,port,protocol,severity,plugin_id,plugin_name, description, solution, info, xref FROM vuln join host on vuln.host_id = host.id WHERE plugin_id like ? and severity >= ?;"
 HOSTS_DETAILS_BY_PNAME = "SELECT distinct address,port,protocol,severity,plugin_id,plugin_name, description, solution, info, xref FROM vuln join host on vuln.host_id = host.id WHERE plugin_name like ? and severity >= ?;"
+HOSTS_DETAILS_BY_POUTPUT = "SELECT distinct address,port,protocol,severity,plugin_id,plugin_name, description, solution, info, xref FROM vuln join host on vuln.host_id = host.id WHERE plugin_output like ? and severity >= ?;"
 HOSTS_DETAILS_BY_IP = "SELECT distinct address,port,protocol,severity,plugin_id,plugin_name, description, solution, info, xref FROM vuln join host on vuln.host_id = host.id WHERE address like ? and severity >= ?;"
 
 def get_ips_by_filter(db, query="", search = "", min_severity=0):
@@ -59,7 +61,8 @@ def vulns_cli():
     parser.add_argument("--db", type=str, required=False, default="scandb.sqlite")
     parser.add_argument("--min-severity", type=int, required=False, default=0,
                         help="Minimum severity level (default: 0)")
-    parser.add_argument("--filter-by", required=False, choices=['cve', 'plugin-id', 'plugin-name', 'description', 'ip'],
+    parser.add_argument("--filter-by", required=False, choices=['cve', 'plugin-id', 'plugin-name', 'plugin-output',
+                                                                'description', 'ip'],
                         default='description', help="Filter hosts by the given filter. The search value is specified "
                                                     "with option --search. The following fields can be used as filter "
                                                     "'cve', 'plugin-id', 'plugin-name', 'description', 'ip'. (Note: "
@@ -104,6 +107,11 @@ def vulns_cli():
             elif args.filter_by == "description":
                 desc = "%{0}%".format(args.search)
                 ips = get_ips_by_filter(args.db, HOSTS_BY_VULN_DESC, desc, args.min_severity)
+
+            elif args.filter_by == "plugin-output":
+                po = "%{0}%".format(args.search)
+                ips = get_ips_by_filter(args.db, HOSTS_BY_POUTPUT, po, args.min_severity)
+
             elif args.filter_by == "ip":
                 ip = "%{0}%".format(args.search)
                 ips = get_ips_by_filter(args.db, HOSTS_BY_IP, ip, args.min_severity)
@@ -125,6 +133,9 @@ def vulns_cli():
             elif args.filter_by == "description":
                 desc = "%{0}%".format(args.search)
                 details =  get_details_by_filter(args.db, HOSTS_DETAILS_BY_VULN_DESC, desc, args.min_severity)
+            elif args.filter_by == "plugin-output":
+                po = "%{0}%".format(args.search)
+                details =  get_details_by_filter(args.db, HOSTS_DETAILS_BY_POUTPUT, po, args.min_severity)
             elif args.filter_by == "ip":
                 ip = "%{0}%".format(args.search)
                 details = get_details_by_filter(args.db, HOSTS_DETAILS_BY_IP, ip, args.min_severity)
