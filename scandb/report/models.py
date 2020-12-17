@@ -87,3 +87,39 @@ class ReportHost(object):
         self.status = status
         self.tcp = tcp
         self.udp = udp
+
+
+class ReportVulnStat(object):
+    def __init__(self, address ="", critical="", high="", medium="", low="", info=""):
+        self.address = address
+        self.critical = critical
+        self.high = high
+        self.medium = medium
+        self.low = low
+        self.info = info
+
+
+class ReportPortStat(object):
+    def __init__(self, address ="", tcp="", udp=""):
+        self.address = address
+        self.tcp = tcp
+        self.udp = udp
+
+
+class ReportHostPortStat(object):
+    def __init__(self, address ="", ports="", protocol=""):
+        self.address = address
+        self.ports = ports
+        self.protocol = protocol
+
+
+class ReportScanStat(object):
+    def __init__(self, id="", start="", end="", elapsed="", hosts_total="", hosts_up="", hosts_down="", name=""):
+        self.id = id
+        self.start = start
+        self.end = end
+        self.elapsed = elapsed
+        self.hosts_total = hosts_total
+        self.hosts_up = hosts_up
+        self.hosts_down = hosts_down
+        self.name = name

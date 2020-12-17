@@ -8,6 +8,9 @@ from scandb.report.models import ReportVulnByAddressList
 from scandb.report.queries import select_vulns, select_ips, select_plugin_ids, select_plugin_by_id
 from scandb.report.queries import select_vuln_by_ip, select_vuln_addr_by_plugin
 
+from scandb.statistics.queries import get_vuln_stats
+from scandb.statistics.queries import get_port_stats
+from scandb.statistics.queries import get_scan_stats
 
 def create_list_ReportVulnPlugin(min_severity=0):
     """
@@ -38,15 +41,12 @@ def create_list_ReportVulnByAddressList(min_severity=0):
     return result
 
 
-def create_ReportHost_list():
-    hosts = Hos
 
-
-
-def write_to_template(template, outfile, vulns=[], vulns_by_plugin=[], vulns_by_host=[], host_portlist=[]):
+def write_to_template(template, outfile, scan_stats=[], vuln_stats=[], port_stats=[], host_port_list=[],
+                      vulns=[], vulns_by_plugin=[], vulns_by_host=[], host_portlist=[]):
     try:
         doc = DocxTemplate(template)
-        context = {'vulns' : vulns,
+        context = {'vulns' : vulns, 'scan_stats' : scan_stats, 'vuln_stats': vuln_stats, 'port_stats' : port_stats,
                    'vulns_by_plugin': vulns_by_plugin, 'vulns_by_host': vulns_by_host}
         doc.render(context)
         doc.save(outfile)
@@ -74,5 +74,9 @@ def report_cli():
     vulns_by_plugin = create_list_ReportVulnPlugin(args.min_severity)
     vulns_by_host = create_list_ReportVulnByAddressList(args.min_severity)
 
+    scan_stats = get_scan_stats(args.db)
+    vuln_stats = get_vuln_stats(args.db)
+    port_stats = get_port_stats(args.db)
+
     write_to_template(args.template, outfile=args.outfile, vulns=vulns, vulns_by_plugin=vulns_by_plugin,
-                      vulns_by_host=vulns_by_host)
+                      vulns_by_host=vulns_by_host, vuln_stats=vuln_stats, port_stats=port_stats, scan_stats=scan_stats)

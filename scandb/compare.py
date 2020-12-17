@@ -1,11 +1,12 @@
 import argparse
 import sqlite3
 
-from scandb.statistics import get_vuln_stats
-from scandb.statistics import host_port_list
-from scandb.statistics import get_port_stats
+from scandb.statistics.queries import get_vuln_stats
+from scandb.statistics.queries import host_port_list
+from scandb.statistics.queries import get_port_stats
 
 SQL_ADDR_FROM_HOSTS = "SELECT distinct address from host where status = 'up'"
+
 host_port_list = """
     select address , group_concat(distinct port || '(' || service || ')'), protocol from port where protocol = 'tcp' and status='open' group by address
     union
@@ -25,14 +26,14 @@ def run_query(db, query):
 def handle_vuln_stats(db1, db2, outfile="scandb"):
 
     result = {}
-    addresses_db1 = [ x[0] for x in run_query(db1, SQL_ADDR_FROM_HOSTS)]
-    addresses_db2 = [ x[0] for x in run_query(db2, SQL_ADDR_FROM_HOSTS)]
+    addresses_db1 = [x[0] for x in run_query(db1, SQL_ADDR_FROM_HOSTS)]
+    addresses_db2 = [x[0] for x in run_query(db2, SQL_ADDR_FROM_HOSTS)]
     addresses = set(addresses_db1).union(addresses_db2)
 
     # prepare a dictionary with all ip addresses that exist in one of the databases
     for ip in addresses:
-        result[ip] = {'db1': {'critical' : '-', 'high' : '-', 'medium': '-' ,'low': '-', 'info':'-' },
-                      'db2' : {'critical' : '-', 'high' : '-', 'medium': '-' ,'low': '-', 'info':'-' }}
+        result[ip] = {'db1': {'critical': '-', 'high': '-', 'medium': '-', 'low': '-', 'info': '-'},
+                      'db2': {'critical': '-', 'high': '-', 'medium': '-', 'low': '-', 'info': '-'}}
 
     stats_db1 = get_vuln_stats(db1)
     for s in stats_db1:
@@ -82,13 +83,12 @@ def handle_service_stats(db1, db2, outfile="scandb"):
 
     # prepare a dictionary with all ip addresses that exist in one of the databases
     for ip in addresses:
-        result[ip] = {'db1': {'tcp' : '-', 'udp':'-' },
-                      'db2' : {'tcp' : '-', 'udp':'-' }}
+        result[ip] = {'db1': {'tcp': '-', 'udp': '-'}, 'db2': {'tcp': '-', 'udp': '-'}}
 
     stats_db1 = run_query(db1, host_port_list)
     for i in stats_db1:
         ip , ports, proto = i
-        if proto =='tcp':
+        if proto == 'tcp':
             result[ip]['db1']['tcp'] = ports
         elif proto == 'udp':
             result[ip]['db1']['udp'] = ports

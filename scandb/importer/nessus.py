@@ -3,8 +3,9 @@ import json
 import peewee
 from libnessus.parser import NessusParser
 from termcolor import colored
-from scandb.util import host_to_tupel, get_ports, hash_file
-from scandb.models import Scan, Host, Port, Vuln, init_db
+
+from scandb.importer.util import hash_file
+from scandb.models import Scan, Host, Vuln
 
 def _nessus_host_to_dbhost(h, scan):
     """

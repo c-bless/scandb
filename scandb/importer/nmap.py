@@ -3,7 +3,9 @@ import os
 import peewee
 from libnmap.parser import NmapParser
 from termcolor import colored
-from scandb.util import host_to_tupel, get_ports, hash_file
+
+from scandb.importer.util import hash_file
+from scandb.importer.util import host_to_tupel, get_ports
 from scandb.models import Scan, Host, Port, init_db
 
 

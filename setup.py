@@ -12,7 +12,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='scandb',
-    version='0.5.0',
+    version='0.6.0',
     author='Christoph Bless',
     author_email='bitbucket@cbless.de',
     url='https://bitbucket.org/cbless/scandb',
@@ -20,7 +20,7 @@ setup(
     description=("Scripts to import and analyze nmap and nessus scans."),
     long_description=long_description,
     long_description_content_type='text/markdown',
-    packages=['scandb','scandb.report'],
+    packages=['scandb','scandb.report','scandb.importer', 'scandb.services','scandb.statistics'],
     install_requires=[
         'argparse',
         'termcolor',
@@ -32,9 +32,9 @@ setup(
     entry_points = {
         "console_scripts": [
             "scandb-vulns = scandb.vulns:vulns_cli",
-            "scandb-services = scandb.services:services_cli",
-            "scandb-statistics = scandb.statistics:statistics_cli",
-            "scandb-importer = scandb.importer:importer",
+            "scandb-services = scandb.services.cli:services_cli",
+            "scandb-statistics = scandb.statistics.cli:statistics_cli",
+            "scandb-importer = scandb.importer.cli:importer_cli",
             "scandb-compare = scandb.compare:compare_cli",
             "scandb-report = scandb.report.cli:report_cli"
         ]

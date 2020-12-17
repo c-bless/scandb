@@ -1,12 +1,11 @@
 from __future__ import print_function
 import argparse
 import os
-from termcolor import colored
 from scandb.models import init_db
-from scandb.nmap import import_nmap_file
-from scandb.nessus import import_nessus_file
+from scandb.importer.nmap import import_nmap_file
+from scandb.importer.nessus import import_nessus_file
 
-def importer():
+def importer_cli():
     """
     Entry point for the console script scandb-importer. This script allows to import either a single nessus|nmap XML-file or
     several nessus|nmap XML-files within a given directory.
