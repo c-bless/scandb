@@ -67,7 +67,9 @@ def handle_details_list(args):
 
 
 def vulns_cli():
-    parser = argparse.ArgumentParser(description="")
+    parser = argparse.ArgumentParser(description="I can be used to query the sqlite database to filter specific "
+                                                 "vulnerabilities. Results can be displayed to stdout or written to "
+                                                 "a csv file.")
     parser.add_argument("--db", type=str, required=False, default="scandb.sqlite")
     parser.add_argument("--min-severity", type=int, required=False, default=0,
                         help="Minimum severity level (default: 0)")

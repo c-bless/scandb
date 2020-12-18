@@ -42,7 +42,10 @@ def create_list_ReportVulnByAddressList(min_severity=0):
 
 
 def report_cli():
-    parser = argparse.ArgumentParser(description="")
+    parser = argparse.ArgumentParser(description="Generate DOCX reports based on custom templates. "
+                                    "See https://bitbucket.org/cbless/scandb/src/master/examples/ for example templates."
+                                    "A description of usable objects and their attributes can be found under: \n"
+                                    "https://bitbucket.org/cbless/scandb/wiki/Report-Templates")
     parser.add_argument("--db", type=str, required=False, default="scandb.sqlite")
     parser.add_argument("--min-severity", type=int, required=False, default=0,
                         help="Minimum severity level (default: 0)")

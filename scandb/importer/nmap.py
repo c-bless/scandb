@@ -6,7 +6,7 @@ from termcolor import colored
 
 from scandb.importer.util import hash_file
 from scandb.importer.util import host_to_tupel, get_ports
-from scandb.models import Scan, Host, Port, init_db
+from scandb.models.db import Scan, Host, Port, init_db
 
 
 def import_nmap_file(infile):

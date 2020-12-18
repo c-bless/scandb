@@ -106,7 +106,14 @@ def handle_host_port_list(db, outfile, delimiter=";", gen_docx=False, template="
 
 
 def statistics_cli():
-    parser = argparse.ArgumentParser(description="")
+    parser = argparse.ArgumentParser(description="I can generate statistics about vulnerabilities, open ports or "
+                                                 "for the imported scans. Furthermore I can generate a host/portlist "
+                                                 "as csv file. All statistics can be displayed on stdout or they can "
+                                                 "be written to csv or docx files (based on templates). "
+                                                 "See https://bitbucket.org/cbless/scandb/src/master/examples/ for "
+                                                 "example templates.A description of usable objects and their "
+                                                 "attributes can be found under: "
+                                                 "https://bitbucket.org/cbless/scandb/wiki/Report-Templates")
     parser.add_argument("--db", type=str, required=False, default="scandb.sqlite")
     parser.add_argument("-s", "--scan-statistics", required=False, action='store_true', default=False,
                         help="Print statistics for each scan")

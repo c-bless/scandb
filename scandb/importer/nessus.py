@@ -5,7 +5,7 @@ from libnessus.parser import NessusParser
 from termcolor import colored
 
 from scandb.importer.util import hash_file
-from scandb.models import Scan, Host, Vuln
+from scandb.models.db import Scan, Host, Vuln
 
 def _nessus_host_to_dbhost(h, scan):
     """

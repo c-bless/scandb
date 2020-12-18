@@ -22,8 +22,10 @@ This command can be used do import a single file or many files at once to a sqli
 You can use the parameters *--file* and *--dir* to specify the files that should be imported.
 
 ```
-$ scandb-importer -h
+$  scandb-importer -h     
 usage: scandb-importer [-h] [--db DB] [--file [FILE [FILE ...]]] [--dir DIR]
+
+I will import Nmap and Nessus scans into a SQLite database.
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -42,14 +44,16 @@ This command can be used to generate target lists based on port filters.
 $ scandb-services -h
 usage: scandb-services [-h] [--db DB] [--status STATUS] [-t PORTS] [-u PORTS] [-o UNION|INTERSECTION] [--list] [-d LIST_DELIMITER] [--list-file FILE]
 
+I can be used to generate target lists (ip address lists) that can be used as input for other tools based on given filters.
+
 optional arguments:
   -h, --help            show this help message and exit
   --db DB
   --status STATUS       Status string stored in database (default: up)
   -t PORTS, --tcp PORTS
-                        TCP ports
+                        Open TCP ports
   -u PORTS, --udp PORTS
-                        UDP ports
+                        Open UDP ports
   -o UNION|INTERSECTION, --operation UNION|INTERSECTION
                         Operation to combine the sets of TCP and UDP ports (default: UNION)
   --list                Generate a target list
@@ -106,7 +110,10 @@ $ scandb-services --list -d " " -u 53 -t 80 -o intersection
 This command can be used to display statistics or to create a csv file with all IP addresses and their open ports.
 ```
 $  scandb-statistics -h
-usage: scandb-statistics [-h] [--db DB] [-s] [-v] [-p] [--host-portlist] [-d DELIMETER] [-o OUTFILE] [-w]
+usage: scandb-statistics [-h] [--db DB] [-s] [-v] [-p] [--host-portlist] [-d DELIMITER] [-o OUTFILE] [-w] [--docx] [--template TEMPLATE]
+
+I can generate statistics about vulnerabilities, open ports or for the imported scans. Furthermore I can generate a host/portlist as csv file. All statistics can be displayed on stdout or they can be written to csv or docx files (based on templates). See
+https://bitbucket.org/cbless/scandb/src/master/examples/ for example templates.A description of usable objects and their attributes can be found under: https://bitbucket.org/cbless/scandb/wiki/Report-Templates
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -118,11 +125,13 @@ optional arguments:
   -p, --port-statistics
                         Print number of 'open' TCP and UDP ports foreach host.
   --host-portlist       generate a csv with a list of TCP and UDP Ports per host
-  -d DELIMETER, --delimeter DELIMETER
-                        Delimeter for CSV files.
+  -d DELIMITER, --delimiter DELIMITER
+                        Delimiter for CSV files.
   -o OUTFILE, --outfile OUTFILE
                         Prefix for output files.
   -w, --write-file      Write data to CSV file. Prefix of filename can be changed with parameter outfile
+  --docx                Render the given DOCX template for the selected statistics. Prefix of filename can be changed with parameter '--outfile'. The template can be specified with parameter '--template'
+  --template TEMPLATE   Name of the template to render. Examples can be found under: https://bitbucket.org/cbless/scandb/src/master/examples/
 ```
 
 To generate a list of open TCP and UDP ports you can use the following command:
@@ -143,8 +152,10 @@ The content of the file scandb-hostportlist.csv will looks like this.
 ## scandb-vulns
 This command can be used to generate target lists based on vulnerability filters.
 ```
-$    scandb-vulns -h                                                                                                                           
+$    scandb-vulns -h        
 usage: scandb-vulns [-h] [--db DB] [--min-severity MIN_SEVERITY] [--filter-by {cve,plugin-id,plugin-name,plugin-output,description,ip}] [--search SEARCH-Term] [--list {ips,details}] [-d LIST_DELIMITER] [--list-file FILE]
+
+I can be used to query the sqlite database to filter specific vulnerabilities. Results can be displayed to stdout or written to a csv file.
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -202,8 +213,10 @@ Examples can be found under:  https://bitbucket.org/cbless/scandb/src/master/exa
 
 
 ```
-$   scandb-report -h
+$     scandb-report -h       
 usage: scandb-report [-h] [--db DB] [--min-severity MIN_SEVERITY] [--template TEMPLATE] [--outfile OUTFILE]
+
+Generate DOCX reports based on custom templates. See https://bitbucket.org/cbless/scandb/src/master/examples/ for example templates.A description of usable objects and their attributes can be found under: https://bitbucket.org/cbless/scandb/wiki/Report-Templates
 
 optional arguments:
   -h, --help            show this help message and exit

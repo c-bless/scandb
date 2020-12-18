@@ -1,7 +1,7 @@
 from __future__ import print_function
 import argparse
 import os
-from scandb.models import init_db
+from scandb.models.db import init_db
 from scandb.importer.nmap import import_nmap_file
 from scandb.importer.nessus import import_nessus_file
 
@@ -11,7 +11,7 @@ def importer_cli():
     several nessus|nmap XML-files within a given directory.
     :return:
     """
-    parser = argparse.ArgumentParser(description="")
+    parser = argparse.ArgumentParser(description="I will import Nmap and Nessus scans into a SQLite database.")
     parser.add_argument("--db", type=str, required=False, default="scandb.sqlite")
     parser.add_argument("--file", metavar="FILE", type=str, default=None, nargs="*",
                         help="The nessus and/or nmap file(s)")

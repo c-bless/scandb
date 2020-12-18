@@ -4,14 +4,15 @@ from scandb.services.queries import get_host_list, get_host_list_by_tcp, get_hos
 
 
 def services_cli():
-    parser = argparse.ArgumentParser(description="")
+    parser = argparse.ArgumentParser(description="I can be used to generate target lists (ip address lists) that can be"
+                                                 " used as input for other tools based on given filters.")
     parser.add_argument("--db", type=str, required=False, default="scandb.sqlite")
     parser.add_argument("--status", type=str, required=False, default="up",
                         help="Status string stored in database (default: up)")
     parser.add_argument("-t", "--tcp", metavar="PORTS", required=False, type=str, default=None,
-                        help="TCP ports")
+                        help="Open TCP ports")
     parser.add_argument("-u", "--udp", metavar="PORTS", required=False, type=str, default=None,
-                        help="UDP ports")
+                        help="Open UDP ports")
     parser.add_argument("-o", "--operation", metavar="UNION|INTERSECTION", required=False, type=str, default="UNION",
                         help="Operation to combine the sets of TCP and UDP ports (default: UNION)")
     parser.add_argument("--list", required=False, action='store_true', default=False,
