@@ -1,10 +1,10 @@
 
 import sqlite3
 
-from scandb.report.models import ReportScanStat
-from scandb.report.models import ReportVulnStat
-from scandb.report.models import ReportPortStat
-from scandb.report.models import ReportHostPortStat
+from scandb.models.report import ReportScanStat
+from scandb.models.report import ReportVulnStat
+from scandb.models.report import ReportPortStat
+from scandb.models.report import ReportHostPortStat
 
 
 def execute_query(db, query):

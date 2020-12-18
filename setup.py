@@ -20,7 +20,15 @@ setup(
     description=("Scripts to import and analyze nmap and nessus scans."),
     long_description=long_description,
     long_description_content_type='text/markdown',
-    packages=['scandb','scandb.report','scandb.importer', 'scandb.services','scandb.statistics'],
+    packages=[
+        'scandb',
+        'scandb.report',
+        'scandb.importer',
+        'scandb.services',
+        'scandb.statistics',
+        'scandb.models',
+        'scandb.vulns'
+    ],
     install_requires=[
         'argparse',
         'termcolor',
@@ -31,7 +39,7 @@ setup(
     ],
     entry_points = {
         "console_scripts": [
-            "scandb-vulns = scandb.vulns:vulns_cli",
+            "scandb-vulns = scandb.vulns.cli:vulns_cli",
             "scandb-services = scandb.services.cli:services_cli",
             "scandb-statistics = scandb.statistics.cli:statistics_cli",
             "scandb-importer = scandb.importer.cli:importer_cli",

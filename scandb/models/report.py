@@ -7,6 +7,15 @@ def xref2cve(xref):
         cve = ",".join(tmp['cve'])
     return cve
 
+
+def xref2bid(xref):
+    tmp = json.loads(xref.replace("'", "\""))
+    cve = ""
+    if 'bid' in tmp:
+        cve = ",".join(tmp['bid'])
+    return cve
+
+
 class ReportVuln(object):
 
     def __init__(self, address ="", description ="", synopsis="", port="", protocol="", service="", solution="",
@@ -22,6 +31,7 @@ class ReportVuln(object):
         self.severity = severity
         self.xref = xref
         self.cve = xref2cve(xref)
+        self.bid = xref2bid(xref)
         self.info = info
         self.plugin_id = plugin_id
         self.plugin_name = plugin_name
@@ -47,6 +57,7 @@ class ReportVulnPlugin(object):
         self.xref = xref
         self.info = info
         self.cve = xref2cve(xref)
+        self.bid = xref2bid(xref)
         self.plugin_id = plugin_id
         self.plugin_name = plugin_name
         self.plugin = plugin
@@ -90,6 +101,7 @@ class ReportHost(object):
 
 
 class ReportVulnStat(object):
+
     def __init__(self, address ="", critical="", high="", medium="", low="", info=""):
         self.address = address
         self.critical = critical
@@ -98,6 +110,13 @@ class ReportVulnStat(object):
         self.low = low
         self.info = info
 
+    @staticmethod
+    def get_csv_header(delimiter=";"):
+        return delimiter.join(["Address", "Critical", "High", "Medium", "Low", "Info"])
+
+    def as_csv(self, delimiter=";"):
+        return delimiter.join([self.address, self.critical, self.high, self.medium, self.low, self.info])
+
 
 class ReportPortStat(object):
     def __init__(self, address ="", tcp="", udp=""):
@@ -105,12 +124,26 @@ class ReportPortStat(object):
         self.tcp = tcp
         self.udp = udp
 
+    @staticmethod
+    def get_csv_header(delimiter=";"):
+        return delimiter.join(["Address", "TCP", "UDP"])
+
+    def as_csv(self, delimiter=";"):
+        return delimiter.join([self.address, self.tcp, self.udp])
+
 
 class ReportHostPortStat(object):
     def __init__(self, address ="", ports="", protocol=""):
         self.address = address
         self.ports = ports
         self.protocol = protocol
+
+    @staticmethod
+    def get_csv_header(delimiter=";"):
+        return delimiter.join(["Address", "Ports", "Protocol"])
+
+    def as_csv(self, delimiter=";"):
+        return delimiter.join([self.address, self.ports, self.protocol])
 
 
 class ReportScanStat(object):
@@ -123,3 +156,12 @@ class ReportScanStat(object):
         self.hosts_up = hosts_up
         self.hosts_down = hosts_down
         self.name = name
+
+    @staticmethod
+    def get_csv_header(delimiter=";"):
+        return delimiter.join(["scan id", "Start", "End", "Elapsed", "Hosts total", "Hosts up", "Hosts down",
+                               "Parameters"])
+
+    def as_csv(self, delimiter=";"):
+        return delimiter.join([self.id, self.start, self.end, self.elapsed, self.hosts_total, self.hosts_up,
+                               self.hosts_down, self.name])

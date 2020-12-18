@@ -2,7 +2,6 @@ import argparse
 import sqlite3
 
 from scandb.statistics.queries import get_vuln_stats
-from scandb.statistics.queries import host_port_list
 from scandb.statistics.queries import get_port_stats
 
 SQL_ADDR_FROM_HOSTS = "SELECT distinct address from host where status = 'up'"

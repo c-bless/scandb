@@ -1,4 +1,4 @@
-from scandb.models import Vuln, Host, Scan, Port
+from scandb.models.db import Vuln, Host, Scan, Port
 from scandb.report.util import db2ReportVulnAddress, db2ReportVulnPlugin, db2ReportVuln
 
 
@@ -57,3 +57,5 @@ def select_vulns(min_severity=0):
     result = Vuln.select(Vuln).join(Host).where(Vuln.severity >= min_severity)
     vulns = [db2ReportVuln(v) for v in result]
     return vulns
+
+

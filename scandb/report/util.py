@@ -1,7 +1,11 @@
+import json
 
-from scandb.report.models import ReportVuln
-from scandb.report.models import ReportVulnAddress
-from scandb.report.models import ReportVulnPlugin
+from docxtpl import DocxTemplate
+from termcolor import colored
+
+from scandb.models.report import ReportVuln
+from scandb.models.report import ReportVulnAddress
+from scandb.models.report import ReportVulnPlugin
 
 def db2ReportVuln(v):
     """
@@ -33,3 +37,20 @@ def db2ReportVulnAddress(v):
     address = ReportVulnAddress ( address =v.host.address, port=v.port, protocol=v.protocol, service=v.service,
                                     plugin_output=v.plugin_output)
     return address
+
+
+
+
+
+def write_to_template(template, outfile, scan_stats=[], vuln_stats=[], port_stats=[], host_port_list=[],
+                      vulns=[], vulns_by_plugin=[], vulns_by_host=[]):
+    try:
+        doc = DocxTemplate(template)
+        context = {'vulns' : vulns, 'scan_stats' : scan_stats, 'vuln_stats': vuln_stats, 'port_stats' : port_stats,
+                   'vulns_by_plugin': vulns_by_plugin, 'vulns_by_host': vulns_by_host, 'host_port_list': host_port_list}
+        doc.render(context)
+        doc.save(outfile)
+    except Exception as e:
+        print(e)
+        print(colored("[-] {0}".format(e.message), "red"))
+

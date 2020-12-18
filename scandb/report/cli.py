@@ -1,16 +1,16 @@
 import argparse
-from docxtpl import DocxTemplate, RichText
-from termcolor import colored
 
-from scandb.models import init_db
+from scandb.models.db import init_db
 
-from scandb.report.models import ReportVulnByAddressList
+from scandb.models.report import ReportVulnByAddressList
 from scandb.report.queries import select_vulns, select_ips, select_plugin_ids, select_plugin_by_id
 from scandb.report.queries import select_vuln_by_ip, select_vuln_addr_by_plugin
+from scandb.report.util import write_to_template
 
 from scandb.statistics.queries import get_vuln_stats
 from scandb.statistics.queries import get_port_stats
 from scandb.statistics.queries import get_scan_stats
+from scandb.statistics.queries import get_host_port_list
 
 def create_list_ReportVulnPlugin(min_severity=0):
     """
@@ -41,20 +41,6 @@ def create_list_ReportVulnByAddressList(min_severity=0):
     return result
 
 
-
-def write_to_template(template, outfile, scan_stats=[], vuln_stats=[], port_stats=[], host_port_list=[],
-                      vulns=[], vulns_by_plugin=[], vulns_by_host=[], host_portlist=[]):
-    try:
-        doc = DocxTemplate(template)
-        context = {'vulns' : vulns, 'scan_stats' : scan_stats, 'vuln_stats': vuln_stats, 'port_stats' : port_stats,
-                   'vulns_by_plugin': vulns_by_plugin, 'vulns_by_host': vulns_by_host}
-        doc.render(context)
-        doc.save(outfile)
-    except Exception as e:
-        print(e)
-        print(colored("[-] {0}".format(e.message), "red"))
-
-
 def report_cli():
     parser = argparse.ArgumentParser(description="")
     parser.add_argument("--db", type=str, required=False, default="scandb.sqlite")
@@ -77,6 +63,8 @@ def report_cli():
     scan_stats = get_scan_stats(args.db)
     vuln_stats = get_vuln_stats(args.db)
     port_stats = get_port_stats(args.db)
+    host_port_list = get_host_port_list(args.db)
 
     write_to_template(args.template, outfile=args.outfile, vulns=vulns, vulns_by_plugin=vulns_by_plugin,
-                      vulns_by_host=vulns_by_host, vuln_stats=vuln_stats, port_stats=port_stats, scan_stats=scan_stats)
+                      host_port_list=host_port_list, vulns_by_host=vulns_by_host, vuln_stats=vuln_stats,
+                      port_stats=port_stats, scan_stats=scan_stats)
