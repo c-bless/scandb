@@ -62,7 +62,7 @@ class ReportVuln(object):
         :param synopsis:  Nessus synopsis field / Summary
         :type synopsis: str
 
-        :param port: affected port
+        :param port: Port number for the associated finding
         :type port: str
 
         :param protocol: used transport layer protocol (TCP / UDP)
@@ -74,7 +74,7 @@ class ReportVuln(object):
         :param solution: Vulnerability solution / Mitigation measure
         :type solution: str
 
-        :param severity: Severity rating of the vulnerability (4=critical, 3=High, 2=Medium, 1=Low, 0=Info)
+        :param severity: Severity rating of the vulnerability (4=critical, 3=High, 2=Medium, 1=Low, 0=Informational)
         :type severity: str
 
         :param xref: unparsed xref ouput from lib-nessus (JSON)
@@ -112,10 +112,16 @@ class ReportVuln(object):
         self._xref = xref
         self._cve = xref2cve(xref)
         self._bid = xref2bid(xref)
-        self._info = info
+        try:
+            self._info = json.loads(info)
+        except:
+            self._info = info
         self._plugin_id = plugin_id
         self._plugin_name = plugin_name
-        self._plugin = plugin
+        try:
+            self._plugin = json.loads(plugin)
+        except:
+            self._plugin = plugin
         self._plugin_family = plugin_family
         self._plugin_output = plugin_output
         self._risk = risk
@@ -264,6 +270,48 @@ class ReportVuln(object):
     def risk(self, value):
         self._risk = value
 
+    @property
+    def exploitability_ease(self):
+        if 'exploitability_ease' in self._info:
+            return self._info['exploitability_ease']
+        return ""
+
+    @property
+    def exploit_available(self):
+        if 'exploit_available' in self._info:
+            return self._info['exploit_available']
+        return ""
+
+    @property
+    def canvas(self):
+        if 'canvas' in self._info:
+            return self._info['canvas']
+        return ""
+
+    @property
+    def metasploit(self):
+        if 'metasploit' in self._info:
+            return self._info['metasploit']
+        return ""
+
+    @property
+    def core_impact(self):
+        if 'core_impact' in self._info:
+            return self._info['core_impact']
+        return ""
+
+    @property
+    def canvas_name(self):
+        if 'canvas_name' in self._info:
+            return self._info['canvas_name']
+        return ""
+
+    @property
+    def metasploit_name(self):
+        if 'metasploit_name' in self._info:
+            return self._info['metasploit_name']
+        return ""
+
 
 class ReportVulnPlugin(object):
     """
@@ -288,7 +336,7 @@ class ReportVulnPlugin(object):
         :param solution: Vulnerability solution / Mitigation measure
         :type solution: str
 
-        :param severity: Severity rating of the vulnerability (4=critical, 3=High, 2=Medium, 1=Low, 0=Info)
+        :param severity: Severity rating of the vulnerability (4=critical, 3=High, 2=Medium, 1=Low,  0=Informational)
         :type severity: str
 
         :param xref: unparsed xref ouput from lib-nessus (JSON)
@@ -320,10 +368,16 @@ class ReportVulnPlugin(object):
         self._xref = xref
         self._cve = xref2cve(xref)
         self._bid = xref2bid(xref)
-        self._info = info
+        try:
+            self._info = json.loads(info)
+        except:
+            self._info = info
         self._plugin_id = plugin_id
         self._plugin_name = plugin_name
-        self._plugin = plugin
+        try:
+            self._plugin = json.loads(plugin)
+        except:
+            self._plugin = plugin
         self._plugin_family = plugin_family
         self._risk = risk
 
@@ -439,6 +493,48 @@ class ReportVulnPlugin(object):
     def risk(self, value):
         self._risk = value
 
+    @property
+    def exploitability_ease(self):
+        if 'exploitability_ease' in self._info:
+            return self._info['exploitability_ease']
+        return ""
+
+    @property
+    def exploit_available(self):
+        if 'exploit_available' in self._info:
+            return self._info['exploit_available']
+        return ""
+
+    @property
+    def canvas(self):
+        if 'canvas' in self._info:
+            return self._info['canvas']
+        return ""
+
+    @property
+    def metasploit(self):
+        if 'metasploit' in self._info:
+            return self._info['metasploit']
+        return ""
+
+    @property
+    def core_impact(self):
+        if 'core_impact' in self._info:
+            return self._info['core_impact']
+        return ""
+
+    @property
+    def canvas_name(self):
+        if 'canvas_name' in self._info:
+            return self._info['canvas_name']
+        return ""
+
+    @property
+    def metasploit_name(self):
+        if 'metasploit_name' in self._info:
+            return self._info['metasploit_name']
+        return ""
+
 
 class ReportVulnAddress(object):
     """
@@ -453,7 +549,7 @@ class ReportVulnAddress(object):
         :param address: ip address
         :type address: str
 
-        :param port: affected port
+        :param port: Port number for the associated finding
         :type port: str
 
         :param protocol: used transport layer protocol (TCP / UDP)
@@ -796,8 +892,9 @@ class ReportHostPortStat(object):
 
 
 class ReportScanStat(object):
-    def __init__(self, id="", start="", end="", elapsed="", hosts_total="", hosts_up="", hosts_down="", name=""):
+    def __init__(self, id="", type="", start="", end="", elapsed="", hosts_total="", hosts_up="", hosts_down="", name=""):
         self._id = id
+        self._type = type
         self._start = start
         self._end = end
         self._elapsed = elapsed
@@ -813,6 +910,14 @@ class ReportScanStat(object):
     @id.setter
     def id(self, value):
         self._id = str(value)
+
+    @property
+    def type(self):
+        return self._type
+
+    @type.setter
+    def type(self, value):
+        self._type = value
 
     @property
     def start(self):

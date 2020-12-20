@@ -1,11 +1,15 @@
-This tool provides some scripts to import Nmap and Nessus scan results into a sqlite database.
-The following console commands are available after installation:
-- scandb-importer
-- scandb-services
-- scandb-vulns
-- scandb-statistics
-- scandb-compare
-- scandb-report
+This tool provides some scripts to import *Nmap* and *Nessus* scan results into a sqlite database.
+The imported results can then be anlayzed by various tool to generate target list for other tools, generate csv files and DOCX reports (
+based on DOCX templates). The following console commands are available after installation:
+
+| cli command | description |
+| ----------- | ----------- |
+| scandb-importer | Import *nmap* and *nessus* scans into a sqlite database | 
+| scandb-services | Generate ip address lists based on port filters (e.g. as input for other tools) | 
+| scandb-vulns | Search and generate ip address lists based on vulnerability filters (e.g. search for severity, cve, plugin-id, plugin output) | 
+| scandb-statistics | Print scan, port, vulnerability statistics or generate CSV files with these statistics. Can also be used to generate a CSV file with a list of open ports per host. | 
+| scandb-compare | Compare to scandb instances and generate CSV statistics with differences. (Due to database changes that might happen these instances should be generated with the same *scandb* version) | 
+| scandb-report | Generate DOCX Reports based on given templates.| 
 
 ## License
 This script is licensed under the GNU General Public License in version 3. See http://www.gnu.org/licenses/ for further details.
@@ -208,8 +212,12 @@ optional arguments:
 ```
 
 ## scandb-report
-This command can be used to export vulnerabilities to a docx format based on custom templates (statistics and host/port lists will be added as well). 
-Examples can be found under:  https://bitbucket.org/cbless/scandb/src/master/examples/
+This command can be used to export vulnerabilities to a docx format based on custom templates. 
+
+See also:  
+- [DOCX template examples]( https://bitbucket.org/cbless/scandb/src/master/examples/ ) 
+- [Description of Report Objects]( https://bitbucket.org/cbless/scandb/wiki/Report-Templates ) 
+
 
 
 ```

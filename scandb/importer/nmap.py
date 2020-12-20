@@ -3,6 +3,7 @@ import os
 import peewee
 from libnmap.parser import NmapParser
 from termcolor import colored
+from datetime import datetime
 
 from scandb.importer.util import hash_file
 from scandb.importer.util import host_to_tupel, get_ports
@@ -23,9 +24,12 @@ def import_nmap_file(infile):
         report = NmapParser.parse_fromfile(infile) # read and parse the nmap XML file
         # calculate a SHA-512 hash. This is used to ensure that the file will not be imported more than once.
         sha512 = hash_file(infile)
-
+        started_ts = datetime.fromtimestamp(report.started)
+        started_str = started_ts.strftime("%Y-%m-%d %H:%M:%S")
+        endtime_ts = datetime.fromtimestamp(report.endtime)
+        endtime_str = endtime_ts.strftime("%Y-%m-%d %H:%M:%S")
         # create the database entry for the scan.
-        scan = Scan(file_hash=sha512, name=report.commandline, type='nmap', start=report.started, end=report.endtime,
+        scan = Scan(file_hash=sha512, name=report.commandline, type='nmap', start=started_str, end=endtime_str,
                     elapsed=report.elapsed, hosts_total=report.hosts_total, hosts_up=report.hosts_up,
                     hosts_down=report.hosts_down)
         scan.save()
