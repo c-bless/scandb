@@ -7,6 +7,5 @@ peewee==3.14.0
 python-docx==0.8.10
 python-libnessus==1.0.0.10
 python-libnmap==0.7.0
-scandb==0.6.1
 six==1.15.0
 termcolor==1.1.0
