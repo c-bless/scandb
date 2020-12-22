@@ -17,7 +17,7 @@ setup(
     author_email='bitbucket@cbless.de',
     url='https://bitbucket.org/cbless/scandb',
     license=' GPLv3',
-    description=("Scripts to import nmap and nessus scans into SQLite database, analyze the overall results and genarate reports or target lists."),
+    description=("Scripts to import nmap and nessus scan results into a SQLite database, analyze the overall results and genarate reports or target lists."),
     long_description=long_description,
     long_description_content_type='text/markdown',
     packages=[

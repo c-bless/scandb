@@ -215,6 +215,7 @@ optional arguments:
 This command can be used to export vulnerabilities to a docx format based on custom templates. 
 
 See also:  
+
 - [DOCX template examples]( https://bitbucket.org/cbless/scandb/src/master/examples/ ) 
 - [Description of Report Objects]( https://bitbucket.org/cbless/scandb/wiki/Report-Templates ) 
 

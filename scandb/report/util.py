@@ -51,6 +51,5 @@ def write_to_template(template, outfile, scan_stats=[], vuln_stats=[], port_stat
         doc.render(context)
         doc.save(outfile)
     except Exception as e:
-        print(e)
         print(colored("[-] {0}".format(e.message), "red"))
 
