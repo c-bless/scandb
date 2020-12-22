@@ -77,9 +77,16 @@ def select_vuln_by_ip(ip, min_severity=0):
     :return: list of scandb.models.report.ReportVuln objects
     :rtype: list
     """
-    result = Vuln.select(Vuln).join(Host).where(Host.address == ip and Vuln.severity >= min_severity )
-    vulns = [db2ReportVuln(v) for v in result]
-    return vulns
+    result = []
+    plugin_port_list = []
+    vulns = Vuln.select(Vuln).join(Host).where(Host.address == ip and Vuln.severity >= min_severity )
+    for v in vulns:
+        plugin_port = "{0}:{1}".format(v.plugin_id, v.port)
+        if plugin_port not in plugin_port_list:
+            result.append(v)
+            plugin_port_list.append(plugin_port)
+    return [db2ReportVuln(v) for v in result]
+
 
 
 def select_vulns(min_severity=0):
