@@ -49,6 +49,14 @@ def report_cli():
     parser.add_argument("--db", type=str, required=False, default="scandb.sqlite")
     parser.add_argument("--min-severity", type=int, required=False, default=0,
                         help="Minimum severity level (default: 0)")
+    parser.add_argument("--export-vulns", required=False, choices=['all', 'unsorted', 'host', 'plugin'],
+                        default='plugin', help="Can be used to specifiy how the vulnerabilities will be injected into "
+                                               "the template. 'unsorted' means that the vulnerabilites will be "
+                                               "available unsorted as 'vulns'. 'host' means that a list of "
+                                               "vulnerabilities is avaialable per host. 'plugin' means that the list "
+                                               "of affected systems is available per plugin/vulnerability as "
+                                               "'vulns_by_plugin'. 'all' means that all three options are available in "
+                                               "the template. (default 'plugin')")
     parser.add_argument("--template", type=str, required=False, default="scandb-template.docx",
                         help="Name of the template to render. Examples can be found under: "
                              "https://bitbucket.org/cbless/scandb/src/master/examples/")
@@ -59,9 +67,15 @@ def report_cli():
     # initialize the database
     database = init_db(args.db)
 
-    vulns = select_vulns(args.min_severity)
-    vulns_by_plugin = create_list_ReportVulnPlugin(args.min_severity)
-    vulns_by_host = create_list_ReportVulnByAddressList(args.min_severity)
+    vulns = []
+    vulns_by_plugin = []
+    vulns_by_host = []
+    if args.export_vulns in ['all', 'vulns']:
+        vulns = select_vulns(args.min_severity)
+    if args.export_vulns in ['all', 'plugin']:
+        vulns_by_plugin = create_list_ReportVulnPlugin(args.min_severity)
+    if args.export_vulns in ['all', 'host']:
+        vulns_by_host = create_list_ReportVulnByAddressList(args.min_severity)
 
     scan_stats = get_scan_stats(args.db)
     vuln_stats = get_vuln_stats(args.db)
