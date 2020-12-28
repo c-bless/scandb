@@ -14,7 +14,7 @@ def get_host_list(db, status):
 def get_host_list_by_udp(db, udp):
     conn = sqlite3.connect(db)
     cur = conn.cursor()
-    sql = "SELECT distinct address FROM port where port in ({seq_udp}) and protocol = 'udp'".format(
+    sql = "SELECT distinct address FROM port where port in ({seq_udp}) and protocol = 'udp' and status = 'open' ".format(
             seq_udp=','.join(['?'] * len(udp)))
     cur.execute(sql, udp)
     rows = cur.fetchall()
@@ -26,7 +26,7 @@ def get_host_list_by_udp(db, udp):
 def get_host_list_by_tcp(db, tcp):
     conn = sqlite3.connect(db)
     cur = conn.cursor()
-    sql = "SELECT distinct address FROM port where port in ({seq_tcp}) and protocol = 'tcp'".format(
+    sql = "SELECT distinct address FROM port where port in ({seq_tcp}) and protocol = 'tcp' and status = 'open'".format(
         seq_tcp=','.join(['?'] * len(tcp)))
     cur.execute(sql, tcp)
     rows = cur.fetchall()
@@ -39,8 +39,8 @@ def get_host_list_by_tcp(db, tcp):
 def get_host_list_by_both(db, tcp, udp):
     conn = sqlite3.connect(db)
     cur = conn.cursor()
-    sql = "SELECT distinct address FROM port WHERE port in ({seq_tcp}) and protocol = 'tcp' " \
-          "or port in ({seq_udp})  and protocol ='udp'".format(
+    sql = "SELECT distinct address FROM port WHERE port in ({seq_tcp}) and protocol = 'tcp' and status = 'open'" \
+          "or port in ({seq_udp})  and protocol ='udp' and status = 'open'".format(
             seq_tcp=','.join(['?'] * len(tcp)),
             seq_udp=','.join(['?'] * len(udp)))
     cur.execute(sql, (tcp,udp,))

@@ -1,5 +1,5 @@
 This tool provides some scripts to import *Nmap* and *Nessus* scan results into a sqlite database.
-The imported results can then be anlayzed by various tool to generate target list for other tools, generate csv files and DOCX reports (
+The imported results can then be analyzed by various tool to generate target list for other tools, generate csv files and DOCX reports (
 based on DOCX templates). The following console commands are available after installation:
 
 | cli command | description |
