@@ -222,8 +222,8 @@ See also:
 
 
 ```
-$     scandb-report -h
-usage: scandb-report [-h] [--db DB] [--min-severity MIN_SEVERITY] [--export-vulns {all,unsorted,host,plugin}] [--template TEMPLATE] [--outfile OUTFILE]
+$     scandb-report -h       
+usage: scandb-report [-h] [--db DB] [--min-severity MIN_SEVERITY] [--plugins PLUGINS [PLUGINS ...]] [--export-vulns {all,unsorted,host,plugin}] [--template TEMPLATE] [--outfile OUTFILE]
 
 Generate DOCX reports based on custom templates. See https://bitbucket.org/cbless/scandb/src/master/examples/ for example templates.A description of usable objects and their attributes can be found under: https://bitbucket.org/cbless/scandb/wiki/Report-Templates
 
@@ -231,11 +231,23 @@ optional arguments:
   -h, --help            show this help message and exit
   --db DB
   --min-severity MIN_SEVERITY
-                        Minimum severity level (default: 0)
+                        Minimum severity level (default: 0). Either plugins or min-severity can be used.
+  --plugins PLUGINS [PLUGINS ...]
+                        List of plugins to export. Either plugins or min-severity can be used.
   --export-vulns {all,unsorted,host,plugin}
                         Can be used to specifiy how the vulnerabilities will be injected into the template. 'unsorted' means that the vulnerabilites will be available unsorted as 'vulns'. 'host' means that a list of vulnerabilities is avaialable per host. 'plugin'
                         means that the list of affected systems is available per plugin/vulnerability as 'vulns_by_plugin'. 'all' means that all three options are available in the template. (default 'plugin')
   --template TEMPLATE   Name of the template to render. Examples can be found under: https://bitbucket.org/cbless/scandb/src/master/examples/
   --outfile OUTFILE     Name that is used for the generated report.
 
+```
+
+**Example:** Export only vulnerabilities with a minimum severity of MEDIUM. 
+```
+scandb-report --min-severity 2  --db scandb.sqlite --template "examples/vulns-by-plugin_with_stats.docx"
+```
+
+**Example:** Export only a list of vulnerabilities that match the specified plugin IDs. 
+```
+scandb-report --plugins 12344,44443,22211  --db scandb.sqlite --template "examples/vulns-by-plugin_with_stats.docx"
 ```

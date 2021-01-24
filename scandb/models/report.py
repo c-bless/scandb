@@ -983,3 +983,5 @@ class ReportScanStat(object):
     def as_csv(self, delimiter=";"):
         return delimiter.join([self.id, self.start, self.end, self.elapsed, self.hosts_total, self.hosts_up,
                                self.hosts_down, self.name])
+
+

@@ -39,7 +39,20 @@ def db2ReportVulnAddress(v):
     return address
 
 
-
+def parse_pluginrange(plugins):
+    pluginlist = []
+    if plugins == "" or plugins is None:
+        return pluginlist
+    for plugin in plugins.split(','):
+        if '-' in plugin:
+            pluginrange = plugin.split('-')
+            for i in range(int(pluginrange[0]), int(pluginrange[1]) + 1):
+                # append all plugins in the pluginrange to the new pluginlist
+                pluginlist.append(i)
+        else:
+            # append single plugin to pluginlist
+            pluginlist.append(int(plugin))
+    return pluginlist
 
 
 def write_to_template(template, outfile, scan_stats=[], vuln_stats=[], port_stats=[], host_port_list=[],

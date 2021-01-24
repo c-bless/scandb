@@ -104,3 +104,20 @@ def select_vulns(min_severity=0):
     return vulns
 
 
+
+def select_vulns_by_plugins(ids=[]):
+    """
+    Returns a list of vulnerabilities that have been identified and where the nessus plugin ID is in the given list of
+     plugin IDs.
+
+    :param ids: list of Nessus plugin IDs.
+    :type ids: list
+
+    :return: list of scandb.models.report.ReportVuln objects
+    :rtype: list
+    """
+    result = Vuln.select(Vuln).join(Host).where(Vuln.plugin_id.in_(ids)).order_by(Vuln.plugin_id)
+    vulns = [db2ReportVuln(v) for v in result]
+    return vulns
+
+

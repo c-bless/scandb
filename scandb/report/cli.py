@@ -4,15 +4,15 @@ from scandb.models.db import init_db
 
 from scandb.models.report import ReportVulnByAddressList
 from scandb.report.queries import select_vulns, select_ips, select_plugin_ids, select_plugin_by_id
-from scandb.report.queries import select_vuln_by_ip, select_vuln_addr_by_plugin
-from scandb.report.util import write_to_template
+from scandb.report.queries import select_vuln_by_ip, select_vuln_addr_by_plugin, select_vulns_by_plugins
+from scandb.report.util import write_to_template, parse_pluginrange
 
 from scandb.statistics.queries import get_vuln_stats
 from scandb.statistics.queries import get_port_stats
 from scandb.statistics.queries import get_scan_stats
 from scandb.statistics.queries import get_host_port_list
 
-def create_list_ReportVulnPlugin(min_severity=0):
+def create_list_ReportVulnPlugin(min_severity=0, plugin_ids=[]):
     """
         This function creates a list with ReportVulnPlugin objects.
 
@@ -22,7 +22,10 @@ def create_list_ReportVulnPlugin(min_severity=0):
         :rtype: list
         """
     result = []
-    ids = select_plugin_ids(min_severity=min_severity)
+    if len(plugin_ids) > 0:
+        ids = plugin_ids
+    else:
+        ids = select_plugin_ids(min_severity=min_severity)
     for id in ids:
         plugin = select_plugin_by_id(id)
         addresses = select_vuln_addr_by_plugin(id)
@@ -31,9 +34,12 @@ def create_list_ReportVulnPlugin(min_severity=0):
     return result
 
 
-def create_list_ReportVulnByAddressList(min_severity=0):
+def create_list_ReportVulnByAddressList(min_severity=0, plugin_ids=[]):
     result = []
-    ips = select_ips(min_severity=min_severity)
+    if len(plugin_ids) > 0:
+        ips = [v.host.address for v in select_vulns_by_plugins(plugin_ids)]
+    else:
+        ips = select_ips(min_severity=min_severity)
     for ip in ips:
         addr = ReportVulnByAddressList(address=ip)
         addr.vulns = select_vuln_by_ip(ip=ip, min_severity=min_severity)
@@ -48,7 +54,9 @@ def report_cli():
                                     "https://bitbucket.org/cbless/scandb/wiki/Report-Templates")
     parser.add_argument("--db", type=str, required=False, default="scandb.sqlite")
     parser.add_argument("--min-severity", type=int, required=False, default=0,
-                        help="Minimum severity level (default: 0)")
+                        help="Minimum severity level (default: 0). Either plugins or min-severity can be used.")
+    parser.add_argument("--plugins", nargs='+', required=False, default=None,
+                        help="List of plugins to export. Either plugins or min-severity can be used.")
     parser.add_argument("--export-vulns", required=False, choices=['all', 'unsorted', 'host', 'plugin'],
                         default='plugin', help="Can be used to specifiy how the vulnerabilities will be injected into "
                                                "the template. 'unsorted' means that the vulnerabilites will be "
@@ -70,12 +78,24 @@ def report_cli():
     vulns = []
     vulns_by_plugin = []
     vulns_by_host = []
-    if args.export_vulns in ['all', 'vulns']:
-        vulns = select_vulns(args.min_severity)
-    if args.export_vulns in ['all', 'plugin']:
-        vulns_by_plugin = create_list_ReportVulnPlugin(args.min_severity)
-    if args.export_vulns in ['all', 'host']:
-        vulns_by_host = create_list_ReportVulnByAddressList(args.min_severity)
+
+    if args.plugins:
+        plugin_list = parse_pluginrange(args.plugins)
+        if len (plugin_list) > 0:
+            if args.export_vulns in ['all', 'vulns']:
+                vulns = select_vulns_by_plugins(plugin_list)
+            if args.export_vulns in ['all', 'plugin']:
+                create_list_ReportVulnPlugin(plugin_ids=plugin_list)
+            if args.export_vulns in ['all', 'host']:
+                create_list_ReportVulnByAddressList(plugin_ids=plugin_list)
+    else:
+        # select by min-severity (default = 0)
+        if args.export_vulns in ['all', 'vulns']:
+            vulns = select_vulns(args.min_severity)
+        if args.export_vulns in ['all', 'plugin']:
+            vulns_by_plugin = create_list_ReportVulnPlugin(args.min_severity)
+        if args.export_vulns in ['all', 'host']:
+            vulns_by_host = create_list_ReportVulnByAddressList(args.min_severity)
 
     scan_stats = get_scan_stats(args.db)
     vuln_stats = get_vuln_stats(args.db)
