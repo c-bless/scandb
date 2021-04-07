@@ -155,4 +155,4 @@ def statistics_cli():
         handle_port_stats(args.db, args.outfile, args.write_file, args.delimiter, args.docx, args.template)
 
     if args.host_portlist:
-        handle_host_port_list(args.db, args.outfile, args.docx, args.template)
+        handle_host_port_list(args.db, args.outfile, args.delimiter,  args.docx, args.template)
