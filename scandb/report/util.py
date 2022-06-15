@@ -43,6 +43,7 @@ def parse_pluginrange(plugins):
     pluginlist = []
     if plugins == "" or plugins is None:
         return pluginlist
+    print(plugins)
     for plugin in plugins.split(','):
         if '-' in plugin:
             pluginrange = plugin.split('-')

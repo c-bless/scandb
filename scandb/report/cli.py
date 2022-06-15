@@ -27,10 +27,13 @@ def create_list_ReportVulnPlugin(min_severity=0, plugin_ids=[]):
     else:
         ids = select_plugin_ids(min_severity=min_severity)
     for id in ids:
-        plugin = select_plugin_by_id(id)
-        addresses = select_vuln_addr_by_plugin(id)
-        plugin.addresses = addresses
-        result.append(plugin)
+        try:
+            plugin = select_plugin_by_id(id)
+            addresses = select_vuln_addr_by_plugin(id)
+            plugin.addresses = addresses
+            result.append(plugin)
+        except:
+            pass
     return result
 
 
@@ -55,7 +58,7 @@ def report_cli():
     parser.add_argument("--db", type=str, required=False, default="scandb.sqlite")
     parser.add_argument("--min-severity", type=int, required=False, default=0,
                         help="Minimum severity level (default: 0). Either plugins or min-severity can be used.")
-    parser.add_argument("--plugins", nargs='+', required=False, default=None,
+    parser.add_argument("--plugins", type=str, required=False, default=None,
                         help="List of plugins to export. Either plugins or min-severity can be used.")
     parser.add_argument("--export-vulns", required=False, choices=['all', 'unsorted', 'host', 'plugin'],
                         default='plugin', help="Can be used to specifiy how the vulnerabilities will be injected into "
@@ -85,9 +88,9 @@ def report_cli():
             if args.export_vulns in ['all', 'vulns']:
                 vulns = select_vulns_by_plugins(plugin_list)
             if args.export_vulns in ['all', 'plugin']:
-                create_list_ReportVulnPlugin(plugin_ids=plugin_list)
+                vulns_by_plugin = create_list_ReportVulnPlugin(plugin_ids=plugin_list)
             if args.export_vulns in ['all', 'host']:
-                create_list_ReportVulnByAddressList(plugin_ids=plugin_list)
+                vulns_by_host = create_list_ReportVulnByAddressList(plugin_ids=plugin_list)
     else:
         # select by min-severity (default = 0)
         if args.export_vulns in ['all', 'vulns']:
@@ -105,3 +108,13 @@ def report_cli():
     write_to_template(args.template, outfile=args.outfile, vulns=vulns, vulns_by_plugin=vulns_by_plugin,
                       host_port_list=host_port_list, vulns_by_host=vulns_by_host, vuln_stats=vuln_stats,
                       port_stats=port_stats, scan_stats=scan_stats)
+
+def report_builder():
+    parser = argparse.ArgumentParser(description="Generate DOCX reports based on custom templates and a configuration "
+                                                 "file. "
+                                                 "See https://bitbucket.org/cbless/scandb/src/master/examples/ for example templates."
+                                                 "A description of usable objects and their attributes can be found under: \n"
+                                                 "https://bitbucket.org/cbless/scandb/wiki/Report-Templates")
+
+    args = parser.parse_args()
+
