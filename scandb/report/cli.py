@@ -108,13 +108,3 @@ def report_cli():
     write_to_template(args.template, outfile=args.outfile, vulns=vulns, vulns_by_plugin=vulns_by_plugin,
                       host_port_list=host_port_list, vulns_by_host=vulns_by_host, vuln_stats=vuln_stats,
                       port_stats=port_stats, scan_stats=scan_stats)
-
-def report_builder():
-    parser = argparse.ArgumentParser(description="Generate DOCX reports based on custom templates and a configuration "
-                                                 "file. "
-                                                 "See https://bitbucket.org/cbless/scandb/src/master/examples/ for example templates."
-                                                 "A description of usable objects and their attributes can be found under: \n"
-                                                 "https://bitbucket.org/cbless/scandb/wiki/Report-Templates")
-
-    args = parser.parse_args()
-
