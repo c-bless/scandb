@@ -128,10 +128,11 @@ def vulns_cli():
             fmt = '{0};{1};{2};{3};{4};{5};{6}'
             for i in details:
                 addr, port, proto, severity, pid, pn, description, solution, info, xref = i
-                tmp = json.loads(xref.replace("'","\""))
                 cve = ""
-                if 'cve' in tmp:
-                    cve = ",".join(tmp['cve'])
+                if xref is not None:
+                    tmp = json.loads(xref.replace("'","\""))
+                    if 'cve' in tmp:
+                        cve = ",".join(tmp['cve'])
                 result.append(fmt.format(addr, port, proto, severity, pid, pn, cve))
             with open (args.list_file , "w") as f:
                 f.write("\n".join(result))

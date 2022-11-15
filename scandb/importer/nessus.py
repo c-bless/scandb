@@ -55,14 +55,74 @@ def _nessus_vuln_to_dbvuln(v, host):
         output = plugin['plugin_output']
     if 'pluginFamily' in plugin:
         family = plugin['pluginFamily']
-    info = json.dumps(v.get_vuln_info)
-    plugin = json.dumps(v.get_vuln_plugin)
-    xref = json.dumps(v.get_vuln_xref)
-    risk = json.dumps(v.get_vuln_risk)
-    vuln = Vuln(host=host, description=v.description, synopsis=v.synopsis, port=v.port, protocol=v.protocol,
-                service=v.service, solution=v.solution, severity=v.severity, xref=xref, info=info,
-                plugin=plugin, plugin_id=v.plugin_id, plugin_family = family, plugin_output=output,
-                plugin_name=v.plugin_name, risk=risk)
+    try:
+        info = json.dumps(v.get_vuln_info)
+    except:
+        info = ""
+
+    try:
+        desc = v.description
+    except:
+        desc = ""
+
+    try:
+        synopsis = v.synopsis
+    except:
+        synopsis = ""
+
+    try:
+        port = v.port
+    except:
+        port = ""
+
+    try:
+        protocol = v.protocol
+    except:
+        protocol = ""
+
+    try:
+        plugin_name = v.plugin_name
+    except:
+        plugin_name = ""
+
+    try:
+        solution = v.solution
+    except:
+        solution = ""
+
+    try:
+        severity = v.severity
+    except:
+        severity = ""
+
+    try:
+        plugin_id = v.plugin_id
+    except:
+        plugin_id = ""
+
+    try:
+        plugin = json.dumps(v.get_vuln_plugin)
+    except:
+        plugin = ""
+
+    try:
+        xref = json.dumps(v.get_vuln_xref)
+    except:
+        xref = ""
+
+    try:
+        risk = json.dumps(v.get_vuln_risk)
+    except:
+        risk = ""
+
+    try:
+        service = v.service
+    except:
+        service = ""
+    vuln = Vuln(host=host, description=desc, synopsis=synopsis, port=port, protocol=protocol,
+                service=service, solution=solution, severity=severity, xrsef=xref, info=info,
+                plugin=plugin, plugin_id=plugin_id, plugin_family = family, plugin_output=output,
+                plugin_name=plugin_name, risk=risk)
     return vuln
 
 
