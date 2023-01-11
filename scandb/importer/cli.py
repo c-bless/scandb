@@ -1,6 +1,7 @@
 from __future__ import print_function
 import argparse
 import os
+from sqlalchemy.orm import sessionmaker
 from scandb.models.db import init_db
 from scandb.importer.nmap import import_nmap_file
 from scandb.importer.nessus import import_nessus_file
@@ -24,7 +25,8 @@ def importer_cli():
     dir = args.dir
 
     # initialize the database
-    database = init_db(db)
+    engine = init_db(db)
+
 
     if filename is None and dir is None:
         # either a filename or a directory must be specified
@@ -35,17 +37,17 @@ def importer_cli():
         # import a single nessus/nmap XML-file
         for file in filename:
             if file.endswith('.nessus'):
-                import_nessus_file(file)
+                import_nessus_file(file, engine)
             if file.endswith('.xml'):
-                import_nmap_file(file)
+                import_nmap_file(file, engine)
     if dir is not None:
         # import several nessus/nmap files within a directory
         for filename in os.listdir(dir):
             if filename.endswith('.nessus'):
                 fullname = os.path.join(dir, filename)
-                import_nessus_file(fullname)
+                import_nessus_file(fullname, engine)
             if filename.endswith('.xml'):
                 fullname = os.path.join(dir, filename)
-                import_nmap_file(fullname)
+                import_nmap_file(fullname, engine)
 
-    database.close()
+

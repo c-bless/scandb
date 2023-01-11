@@ -102,3 +102,34 @@ def get_host_port_list(db):
         stat = ReportHostPortStat(address=address, ports=ports, protocol=protocol)
         result.append(stat)
     return result
+
+def get_host_port_list_services(db):
+    sql = """
+        select p.address,tcp, udp from 
+            (select distinct address from port) as p
+            left join TCP_PORTS on p.address = TCP_PORTS.address
+            left join UDP_PORTS on p.address = UDP_PORTS.address;"""
+    rows = execute_query(db, sql)
+    result = []
+    for r in rows:
+        address, ports, protocol = r
+        stat = ReportHostPortStat(address=address, ports=ports, protocol=protocol)
+        result.append(stat)
+    return result
+
+"""
+    CREATE VIEW TCP_PORTS as
+	select address, group_concat (distinct t) as tcp from 
+	(select address, protocol, port || '(' || service || ')' || char(10) as t	from port where protocol ='tcp' and status='open') as tcpports group by address;
+	
+	
+	CREATE VIEW UDP_PORTS as
+	select address, group_concat (distinct u) as udp from 
+	(select address, protocol, port || '(' || service || ')' || char(10) as u	from port where protocol ='udp' and status='open') as udpports group by address;
+	
+	
+	select p.address,tcp, udp from 
+    (select distinct address from port) as p
+    left join TCP_PORTS on p.address = TCP_PORTS.address
+    left join UDP_PORTS on p.address = UDP_PORTS.address;
+"""
