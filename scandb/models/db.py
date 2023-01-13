@@ -1,10 +1,13 @@
-from sqlalchemy import Column, Text, Integer, String, ForeignKey
+from sqlalchemy import Column, Text, Integer, String, ForeignKey, Table, MetaData
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
-from sqlalchemy import create_engine
+from sqlalchemy.orm import relationship, mapper
+from sqlalchemy import create_engine, MetaData
+from sqlalchemy.sql import text
+from sqlalchemy_views import CreateView
 
 Base = declarative_base()
 
+metadata = MetaData()
 
 class Scan(Base):
     __tablename__ = 'Scan'
@@ -20,18 +23,20 @@ class Scan(Base):
     hosts_down = Column(Integer, nullable=True)
     hosts = relationship("Host", back_populates="scan")
 
+
 class Host(Base):
     __tablename__ = 'Host'
     id = Column(Integer, primary_key=True)
     address = Column(String(50), nullable=False)
-    hostname = Column(String(256),nullable=True)
+    hostname = Column(String(256), nullable=True)
     os = Column(String(256), nullable=True)
     os_gen = Column(String(50), nullable=True)
     status = Column(String(10), nullable=True)
     scan = relationship("Scan", back_populates="hosts")
     scan_id = Column(Integer, ForeignKey("Scan.id"))
-    ports = relationship ("Port", back_populates="host")
-    vulns = relationship ("Vuln", back_populates="host")
+    ports = relationship("Port", back_populates="host")
+    vulns = relationship("Vuln", back_populates="host")
+
 
 class Port(Base):
     __tablename__ = 'Port'
@@ -43,7 +48,7 @@ class Port(Base):
     banner = Column(Text, nullable=True)
     status = Column(Text, nullable=False)
     host_id = Column(Integer, ForeignKey("Host.id"))
-    host = relationship ("Host", back_populates="ports")
+    host = relationship("Host", back_populates="ports")
 
 
 class Vuln(Base):
@@ -68,9 +73,64 @@ class Vuln(Base):
     risk = Column(Text, nullable=True)
 
 
+"""
+CREATE VIEW TCP_PORTS as
+	select address, group_concat (distinct t) as tcp from
+	(select address, protocol, port || '(' || service || ')' as t	from port where protocol ='tcp' and status='open') as tcpports group by address;
+
+CREATE VIEW TCP_PORTS2 as 
+	select address, group_concat (distinct t) as tcp from 
+	(select address, protocol, port || ' (' || service || ')' || char(10) as t	from port where protocol ='tcp' and status='open') as tcpports group by address;
+
+CREATE VIEW UDP_PORTS as
+	select address, group_concat (distinct u) as udp from 
+	(select address, protocol, port || '(' || service || ')' as u	from port where protocol ='udp' and status='open') as udpports group by address;
+	
+CREATE VIEW UDP_PORTS2 as
+	select address, group_concat (distinct u) as udp from 
+	(select address, protocol, port || ' (' || service || ')' || char(10) as u	from port where protocol ='udp' and status='open') as udpports group by address;
+	
+CREATE VIEW portlist as 
+select p.address,tcp, udp from 
+(select distinct address from port) as p
+left join TCP_PORTS on p.address = TCP_PORTS.address
+left join UDP_PORTS on p.address = UDP_PORTS.address;
+
+CREATE VIEW portlist2 as 
+select p.address,tcp, udp from 
+(select distinct address from port) as p
+left join TCP_PORTS2 on p.address = TCP_PORTS2.address
+left join UDP_PORTS2 on p.address = UDP_PORTS2.address;
+
+"""
+
+ViewTCPPorts = Table('vTCP_PORTS', metadata)
+defTCPPorts = text("select address, group_concat (distinct t) as tcp "
+                     "from (select address, protocol, port || ' (' || service || ')' as t from Port where protocol ='tcp' and status='open') as tcpports "
+                     "group by address;")
+
+ViewUDPPorts = Table('vUDP_PORTS', metadata)
+defUDPPORTS = text("select address, group_concat (distinct u) as udp "
+                     "from (select address, protocol, port || '(' || service || ')' as u from Port where protocol ='udp' and status='open') as udpports "
+                     "group by address;")
+
+ViewPortlist = Table('vPortlist', metadata)
+defPortlist = text("select p.address,tcp, udp "
+                   "from (select distinct address from Port) as p "
+                   "left join vTCP_PORTS on p.address = vTCP_PORTS.address "
+                   "left join vUDP_PORTS on p.address = vUDP_PORTS.address;")
+
+
 def init_db(db):
     engine = create_engine('sqlite:///{0}'.format(db))
     Base.metadata.bind = engine
     Base.metadata.create_all(engine)
-    return engine
 
+    if not engine.has_table("vTCP_PORTS"):
+        engine.execute(CreateView(ViewTCPPorts, defTCPPorts))
+    if not engine.has_table("vUDP_PORTS"):
+        engine.execute(CreateView(ViewUDPPorts, defUDPPORTS))
+    if not engine.has_table("vPORTLIST"):
+        engine.execute(CreateView(ViewPortlist, defPortlist))
+
+    return engine
