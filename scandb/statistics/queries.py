@@ -23,7 +23,7 @@ def get_scan_stats(db):
     :param db: sqlite database created by scandb-importer
     :return: list of scandb.report.models.ReportScanStat objects
     """
-    sql = "SELECT id,start,end,elapsed,hosts_total,hosts_up,hosts_down,name FROM scan"
+    sql = "SELECT id,start,end,elapsed,hosts_total,hosts_up,hosts_down,name FROM Scan"
     rows = execute_query(db, sql)
     result = []
     for r in rows:
@@ -52,7 +52,7 @@ def get_vuln_stats(db):
     COUNT(CASE WHEN severity = 1 THEN 1 END) as LOW,\
     COUNT(CASE WHEN severity = 0 THEN 1 END) as INFO\
     from \
-    ( select distinct address, plugin, severity   from host h left join vuln v on h.id = v.host_id )\
+    ( select distinct address, plugin, severity from Host h left join Vuln v on h.id = v.host_id )\
     GROUP by address\
     order by CRITICAL DESC, HIGH DESC, MEDIUM DESC, LOW DESC, INFO DESC;"
     rows = execute_query(db, sql)
@@ -77,7 +77,7 @@ def get_port_stats(db):
     sql = "select address,\
     COUNT(CASE WHEN protocol = 'tcp' THEN 1 END) as TCP,\
     COUNT(CASE WHEN protocol = 'udp' THEN 1 END) as UDP\
-    from (select DISTINCT address, port, protocol from port where status = 'open')\
+    from (select DISTINCT address, port, protocol from Port where status = 'open')\
     GROUP by address"
     rows = execute_query(db, sql)
     result = []
@@ -92,9 +92,9 @@ def get_port_stats(db):
 
 def get_host_port_list(db):
     sql = """
-        select address , group_concat(distinct port), protocol from port where protocol = 'tcp' and status='open' group by address
+        select address , group_concat(distinct port), protocol from Port where protocol = 'tcp' and status='open' group by address
         union
-        select address , group_concat(distinct port), protocol from port where protocol = 'udp' and status='open' group by address;"""
+        select address , group_concat(distinct port), protocol from Port where protocol = 'udp' and status='open' group by address;"""
     rows = execute_query(db, sql)
     result = []
     for r in rows:
@@ -106,9 +106,9 @@ def get_host_port_list(db):
 def get_host_port_list_services(db):
     sql = """
         select p.address,tcp, udp from 
-            (select distinct address from port) as p
-            left join TCP_PORTS on p.address = TCP_PORTS.address
-            left join UDP_PORTS on p.address = UDP_PORTS.address;"""
+            (select distinct address from Port) as p
+            left join vTCP_PORTS on p.address = vTCP_PORTS.address
+            left join vUDP_PORTS on p.address = vUDP_PORTS.address;"""
     rows = execute_query(db, sql)
     result = []
     for r in rows:
@@ -116,20 +116,3 @@ def get_host_port_list_services(db):
         stat = ReportHostPortStat(address=address, ports=ports, protocol=protocol)
         result.append(stat)
     return result
-
-"""
-    CREATE VIEW TCP_PORTS as
-	select address, group_concat (distinct t) as tcp from 
-	(select address, protocol, port || '(' || service || ')' || char(10) as t	from port where protocol ='tcp' and status='open') as tcpports group by address;
-	
-	
-	CREATE VIEW UDP_PORTS as
-	select address, group_concat (distinct u) as udp from 
-	(select address, protocol, port || '(' || service || ')' || char(10) as u	from port where protocol ='udp' and status='open') as udpports group by address;
-	
-	
-	select p.address,tcp, udp from 
-    (select distinct address from port) as p
-    left join TCP_PORTS on p.address = TCP_PORTS.address
-    left join UDP_PORTS on p.address = UDP_PORTS.address;
-"""
