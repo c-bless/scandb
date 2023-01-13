@@ -4,7 +4,7 @@ import sqlite3
 def get_host_list(db, status):
     conn = sqlite3.connect(db)
     cur = conn.cursor()
-    cur.execute("SELECT distinct address FROM host WHERE status like ? ;", (status,))
+    cur.execute("SELECT distinct address FROM Host WHERE status like ? ;", (status,))
     rows = cur.fetchall()
     ips = [ x[0] for x in rows]
     conn.close()
@@ -14,7 +14,7 @@ def get_host_list(db, status):
 def get_host_list_by_udp(db, udp):
     conn = sqlite3.connect(db)
     cur = conn.cursor()
-    sql = "SELECT distinct address FROM port where port in ({seq_udp}) and protocol = 'udp' and status = 'open' ".format(
+    sql = "SELECT distinct address FROM Port where port in ({seq_udp}) and protocol = 'udp' and status = 'open' ".format(
             seq_udp=','.join(['?'] * len(udp)))
     cur.execute(sql, udp)
     rows = cur.fetchall()
@@ -26,7 +26,7 @@ def get_host_list_by_udp(db, udp):
 def get_host_list_by_tcp(db, tcp):
     conn = sqlite3.connect(db)
     cur = conn.cursor()
-    sql = "SELECT distinct address FROM port where port in ({seq_tcp}) and protocol = 'tcp' and status = 'open'".format(
+    sql = "SELECT distinct address FROM Port where port in ({seq_tcp}) and protocol = 'tcp' and status = 'open'".format(
         seq_tcp=','.join(['?'] * len(tcp)))
     cur.execute(sql, tcp)
     rows = cur.fetchall()
@@ -39,7 +39,7 @@ def get_host_list_by_tcp(db, tcp):
 def get_host_list_by_both(db, tcp, udp):
     conn = sqlite3.connect(db)
     cur = conn.cursor()
-    sql = "SELECT distinct address FROM port WHERE port in ({seq_tcp}) and protocol = 'tcp' and status = 'open'" \
+    sql = "SELECT distinct address FROM Port WHERE port in ({seq_tcp}) and protocol = 'tcp' and status = 'open'" \
           "or port in ({seq_udp})  and protocol ='udp' and status = 'open'".format(
             seq_tcp=','.join(['?'] * len(tcp)),
             seq_udp=','.join(['?'] * len(udp)))
