@@ -171,7 +171,7 @@ def import_nessus_file(infile, engine):
         # This error is throw when the SHA-512 hash is already present in the database. Therefore, the file cannot be
         # imported again.
         print(colored("[-] File already imported: {0}".format(infile), 'red'))
-        print(colored("[-] {0}".format(str(e), 'red')))
+        #print(colored("[-] {0}".format(str(e), 'red')))
         session.rollback()
     except Exception as e:
         # Invalid file format

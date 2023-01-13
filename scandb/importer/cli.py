@@ -6,6 +6,7 @@ from scandb.models.db import init_db
 from scandb.importer.nmap import import_nmap_file
 from scandb.importer.nessus import import_nessus_file
 
+
 def importer_cli():
     """
     Entry point for the console script scandb-importer. This script allows to import either a single nessus|nmap XML-file or
@@ -26,7 +27,6 @@ def importer_cli():
 
     # initialize the database
     engine = init_db(db)
-
 
     if filename is None and dir is None:
         # either a filename or a directory must be specified
