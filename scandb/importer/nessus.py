@@ -21,7 +21,7 @@ def _nessus_host_to_dbhost(h, scan):
     :return: database host object
     :rtype: scandb.models.Host
     """
-    host = Host(address=h.ip, hostname=h.name, scan=scan)
+    host = Host(address=h.ip, hostname=h.name, scan=scan, status='up')
     # get non-default values from NessusReportHost object
     netbios = h.get_host_properties.get("netbios-name")
     fqdn = h.get_host_properties.get("host-fqdn")
