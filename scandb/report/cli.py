@@ -12,7 +12,7 @@ from scandb.statistics.queries import get_port_stats
 from scandb.statistics.queries import get_scan_stats
 from scandb.statistics.queries import get_host_port_list
 
-def create_list_ReportVulnPlugin(min_severity=0, plugin_ids=[]):
+def create_list_ReportVulnPlugin(engine, min_severity=0, plugin_ids=[]):
     """
         This function creates a list with ReportVulnPlugin objects.
 
@@ -25,11 +25,11 @@ def create_list_ReportVulnPlugin(min_severity=0, plugin_ids=[]):
     if len(plugin_ids) > 0:
         ids = plugin_ids
     else:
-        ids = select_plugin_ids(min_severity=min_severity)
+        ids = select_plugin_ids(engine, min_severity=min_severity)
     for id in ids:
         try:
-            plugin = select_plugin_by_id(id)
-            addresses = select_vuln_addr_by_plugin(id)
+            plugin = select_plugin_by_id(engine, id)
+            addresses = select_vuln_addr_by_plugin(engine, id)
             plugin.addresses = addresses
             result.append(plugin)
         except:
@@ -37,15 +37,15 @@ def create_list_ReportVulnPlugin(min_severity=0, plugin_ids=[]):
     return result
 
 
-def create_list_ReportVulnByAddressList(min_severity=0, plugin_ids=[]):
+def create_list_ReportVulnByAddressList(engine, min_severity=0, plugin_ids=[]):
     result = []
     if len(plugin_ids) > 0:
         ips = [v.host.address for v in select_vulns_by_plugins(plugin_ids)]
     else:
-        ips = select_ips(min_severity=min_severity)
+        ips = select_ips(engine, min_severity=min_severity)
     for ip in ips:
         addr = ReportVulnByAddressList(address=ip)
-        addr.vulns = select_vuln_by_ip(ip=ip, min_severity=min_severity)
+        addr.vulns = select_vuln_by_ip(engine, ip=ip, min_severity=min_severity)
         result.append(addr)
     return result
 
@@ -76,7 +76,7 @@ def report_cli():
     args = parser.parse_args()
 
     # initialize the database
-    database = init_db(args.db)
+    engine = init_db(args.db)
 
     vulns = []
     vulns_by_plugin = []
@@ -86,24 +86,25 @@ def report_cli():
         plugin_list = parse_pluginrange(args.plugins)
         if len (plugin_list) > 0:
             if args.export_vulns in ['all', 'vulns']:
-                vulns = select_vulns_by_plugins(plugin_list)
+                vulns = select_vulns_by_plugins(engine, plugin_list)
             if args.export_vulns in ['all', 'plugin']:
-                vulns_by_plugin = create_list_ReportVulnPlugin(plugin_ids=plugin_list)
+                vulns_by_plugin = create_list_ReportVulnPlugin(engine, plugin_ids=plugin_list)
             if args.export_vulns in ['all', 'host']:
-                vulns_by_host = create_list_ReportVulnByAddressList(plugin_ids=plugin_list)
+                vulns_by_host = create_list_ReportVulnByAddressList(engine, plugin_ids=plugin_list)
     else:
         # select by min-severity (default = 0)
         if args.export_vulns in ['all', 'vulns']:
-            vulns = select_vulns(args.min_severity)
+            vulns = select_vulns(engine, args.min_severity)
         if args.export_vulns in ['all', 'plugin']:
-            vulns_by_plugin = create_list_ReportVulnPlugin(args.min_severity)
+            vulns_by_plugin = create_list_ReportVulnPlugin(engine, args.min_severity)
         if args.export_vulns in ['all', 'host']:
-            vulns_by_host = create_list_ReportVulnByAddressList(args.min_severity)
+            vulns_by_host = create_list_ReportVulnByAddressList(engine, args.min_severity)
 
     scan_stats = get_scan_stats(args.db)
     vuln_stats = get_vuln_stats(args.db)
     port_stats = get_port_stats(args.db)
     host_port_list = get_host_port_list(args.db)
+
 
     write_to_template(args.template, outfile=args.outfile, vulns=vulns, vulns_by_plugin=vulns_by_plugin,
                       host_port_list=host_port_list, vulns_by_host=vulns_by_host, vuln_stats=vuln_stats,

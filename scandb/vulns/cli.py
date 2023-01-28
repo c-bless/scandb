@@ -97,7 +97,7 @@ def vulns_cli():
 
 
     # initialize the database
-    database = init_db(args.db)
+    engine = init_db(args.db)
 
     if not args.list and args.list_file is None:
         parser.print_usage()

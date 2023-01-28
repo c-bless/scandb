@@ -4,13 +4,12 @@ import sqlite3
 from scandb.statistics.queries import get_vuln_stats
 from scandb.statistics.queries import get_port_stats
 
-SQL_ADDR_FROM_HOSTS = "SELECT distinct address from host where status = 'up'"
+SQL_ADDR_FROM_HOSTS = "SELECT distinct address from Host where status = 'up'"
 
 host_port_list = """
-    select address , group_concat(distinct port || '(' || service || ')'), protocol from port where protocol = 'tcp' and status='open' group by address
+    select address , group_concat(distinct port || ' (' || service || ')'), protocol from Port where protocol = 'tcp' and status='open' group by address
     union
-    select address , group_concat(distinct port || '(' || service || ')'), protocol from port where protocol = 'udp' and status='open' group by address;"""
-
+    select address , group_concat(distinct port || ' (' || service || ')'), protocol from Port where protocol = 'udp' and status='open' group by address;"""
 
 
 def run_query(db, query):
