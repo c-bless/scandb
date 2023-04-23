@@ -12,7 +12,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='scandb',
-    version='1.0.0',
+    version='1.0.1',
     author='Christoph Bless',
     author_email='bitbucket@cbless.de',
     url='https://bitbucket.org/cbless/scandb',
@@ -34,7 +34,7 @@ setup(
         'termcolor',
         'python-libnmap',
         'python-libnessus',
-        'SQLAlchemy',
+        'SQLAlchemy<2.0.0',
         'sqlalchemy-views',
         'docxtpl'
     ],
