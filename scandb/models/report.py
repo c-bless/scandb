@@ -224,7 +224,7 @@ class ReportVuln(object):
 
     @property
     def plugin_id(self):
-        return self.plugin_id
+        return self._plugin_id
 
     @plugin_id.setter
     def plugin_id(self, value):
@@ -236,7 +236,7 @@ class ReportVuln(object):
 
     @plugin_name.setter
     def plugin_name(self, value):
-        self.plugin_name = value
+        self._plugin_name = value
 
     @property
     def plugin(self):
@@ -455,7 +455,7 @@ class ReportVulnPlugin(object):
 
     @property
     def plugin_id(self):
-        return self.plugin_id
+        return self._plugin_id
 
     @plugin_id.setter
     def plugin_id(self, value):
@@ -467,7 +467,7 @@ class ReportVulnPlugin(object):
 
     @plugin_name.setter
     def plugin_name(self, value):
-        self.plugin_name = value
+        self._plugin_name = value
 
     @property
     def plugin(self):
