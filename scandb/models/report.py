@@ -42,19 +42,89 @@ def xref2bid(xref):
     return bid
 
 
+class ReportHost(object):
+    def __init__(self, address ="", hostname="", os ="", os_gen="", status="", tcp=[], udp=[]):
+        self._address = address
+        self._hostname = hostname
+        self._os = os
+        self._os_gen = os_gen
+        self._status = status
+        self._tcp = tcp
+        self._udp = udp
+
+    @property
+    def address(self):
+        return self._address
+
+    @address.setter
+    def address(self, value):
+        self._address = value
+
+    @property
+    def hostname(self):
+        return self._hostname
+
+    @hostname.setter
+    def hostname(self, value):
+        self._hostname = value
+
+    @property
+    def os(self):
+        return self._os
+
+    @os.setter
+    def os(self, value):
+        self._os = value
+
+    @property
+    def os_gen(self):
+        return self._os_gen
+
+    @os_gen.setter
+    def os_gen(self, value):
+        self._os_gen = value
+
+    @property
+    def status(self):
+        return self._status
+
+    @status.setter
+    def status(self, value):
+        self._status = value
+
+    @property
+    def tcp(self):
+        return self._tcp
+
+    @tcp.setter
+    def tcp(self, value=[]):
+        self._tcp = value
+
+    @property
+    def udp(self):
+        return self._udp
+
+    @udp.setter
+    def udp(self, value=[]):
+        self._udp = value
+
+
 class ReportVuln(object):
     """
     Object with details of an identified vulnerability and information about the vulnerability scanner plugin that was
     used to identify the vulnerability.
     """
-    def __init__(self, address="", description="", synopsis="", port="", protocol="", service="", solution="",
+    def __init__(self, host: ReportHost=ReportHost(), address="", description="", synopsis="", port="", protocol="", service="", solution="",
                  severity="", xref="", info="", plugin_id="", plugin_name="", plugin="", plugin_family="",
                  plugin_output="",  risk=""):
         """
         Constructor
 
-        :param address: ip address
-        :type address: str
+        :param host: Information about the host
+        :type host: ReportHost
+
+        :param address: The address of the host
+        :type address: str:
 
         :param description: Vulnerability description
         :type description: str
@@ -101,6 +171,7 @@ class ReportVuln(object):
         :param risk: unparsed risk from lib-nessus (JSON)
         :type risk: JSON string
         """
+        self._host = host
         self._address = address
         self._description = description
         self._synopsis = synopsis
@@ -125,6 +196,14 @@ class ReportVuln(object):
         self._plugin_family = plugin_family
         self._plugin_output = plugin_output
         self._risk = risk
+
+    @property
+    def host(self):
+        return self._host
+
+    @host.setter
+    def host(self, host: ReportHost):
+        self._host = host
 
     @property
     def address(self):
@@ -679,71 +758,6 @@ class ReportPort(object):
         self._status = value
 
 
-class ReportHost(object):
-    def __init__(self, address ="", hostname="", os ="", os_gen="", status="", tcp=[], udp=[]):
-        self._address = address
-        self._hostname = hostname
-        self._os = os
-        self._os_gen = os_gen
-        self._status = status
-        self._tcp = tcp
-        self._udp = udp
-
-    @property
-    def address(self):
-        return self._address
-
-    @address.setter
-    def address(self, value):
-        self._address = value
-
-    @property
-    def hostname(self):
-        return self._hostname
-
-    @hostname.setter
-    def hostname(self, value):
-        self._hostname = value
-
-    @property
-    def os(self):
-        return self._os
-
-    @os.setter
-    def os(self, value):
-        self._os = value
-
-    @property
-    def os_gen(self):
-        return self._os_gen
-
-    @os_gen.setter
-    def os_gen(self, value):
-        self._os_gen = value
-
-    @property
-    def status(self):
-        return self._status
-
-    @status.setter
-    def status(self, value):
-        self._status = value
-
-    @property
-    def tcp(self):
-        return self._tcp
-
-    @tcp.setter
-    def tcp(self, value=[]):
-        self._tcp = value
-
-    @property
-    def udp(self):
-        return self._udp
-
-    @udp.setter
-    def udp(self, value=[]):
-        self._udp = value
 
 
 ############## Statistic objects

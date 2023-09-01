@@ -6,14 +6,17 @@ from termcolor import colored
 from scandb.models.report import ReportVuln
 from scandb.models.report import ReportVulnAddress
 from scandb.models.report import ReportVulnPlugin
+from scandb.models.report import ReportHost
+from scandb.models.db import Vuln, Host
 
-def db2ReportVuln(v):
+def db2ReportVuln(v: Vuln):
     """
 
     :param dbvuln: Vuln
     :return:
     """
-    vuln = ReportVuln ( address =v.host.address, description =v.description, synopsis=v.synopsis, port=v.port,
+    
+    vuln = ReportVuln ( host=v.host, address=v.host.address, description=v.description, synopsis=v.synopsis, port=v.port,
                         protocol=v.protocol, service=v.service, solution=v.solution, severity=v.severity,
                         xref=v.xref, info=v.info, plugin_id=v.plugin_id, plugin_name=v.plugin_name, plugin=v.plugin,
                         plugin_family=v.plugin_family, plugin_output=v.plugin_output,  risk=v.risk)
@@ -37,6 +40,11 @@ def db2ReportVulnAddress(v):
     address = ReportVulnAddress ( address =v.host.address, port=v.port, protocol=v.protocol, service=v.service,
                                     plugin_output=v.plugin_output)
     return address
+
+
+def db2ReportHost(v: Host):
+    host = ReportHost(address=v.address, hostname=v.hostname, os=v.os, os_gen=v.os_gen, status=v.status, tcp=v.tcp, udp=v.udp)
+    return host
 
 
 def parse_pluginrange(plugins):

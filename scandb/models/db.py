@@ -55,7 +55,7 @@ class Vuln(Base):
     __tablename__ = 'Vuln'
     id = Column(Integer, primary_key=True)
     host_id = Column(Integer, ForeignKey("Host.id"))
-    host = relationship("Host", back_populates="vulns")
+    host: Host = relationship("Host", back_populates="vulns")
     description = Column(Text, nullable=False)
     synopsis = Column(Text, nullable=True)
     port = Column(Integer, nullable=False)
