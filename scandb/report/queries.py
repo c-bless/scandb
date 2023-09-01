@@ -1,6 +1,6 @@
 from scandb.models.db import Vuln, Host, Scan, Port
 from scandb.report.util import db2ReportVulnAddress, db2ReportVulnPlugin, db2ReportVuln
-from sqlalchemy import select, and_
+from sqlalchemy import select, or_
 from sqlalchemy.orm import sessionmaker
 
 
@@ -19,6 +19,44 @@ def select_plugin_ids(engine, min_severity = 0):
     Session = sessionmaker(bind=engine)
     session = Session()
     ids = session.query(Vuln.plugin_id).filter(Vuln.severity >= min_severity).distinct()
+    result = [i[0] for i in ids]
+    return result
+
+
+def select_plugin_by_names(engine, names: list[str], case_sensitive = False, contains=False):
+    """
+    Returns a list of plugin ids. Only plugins where the plugin name matches are returned.
+
+    :param engine: SQLAlchemy Engine object
+    
+    :param names: List of strings that are used to match the plugin name
+    :type names: list[str]
+
+    :param case_sensitive: If the matching process should be case-sensitive or not
+    :type case_sensitive: boolean
+    
+    :param contains: If substring matching should be used.
+    :type contains: boolean
+
+    :return: list of plugin ids
+    :rtype: list
+    """
+    Session = sessionmaker(bind=engine)
+    session = Session()
+
+    ors = []
+
+    for name in names:
+        searchString = name
+        searchFunc = Vuln.plugin_name.like
+        if contains:
+            searchString = f"%{searchString}%"
+        if not case_sensitive:
+            searchFunc = Vuln.plugin_name.ilike
+
+        ors.append(searchFunc(searchString))
+
+    ids = session.query(Vuln.plugin_id).filter(or_(*ors)).distinct()
     result = [i[0] for i in ids]
     return result
 
