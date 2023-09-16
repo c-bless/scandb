@@ -216,9 +216,8 @@ This command can be used to export vulnerabilities to a docx format based on cus
 
 See also:  
 
-- [DOCX template examples]( https://bitbucket.org/cbless/scandb/src/master/examples/ ) 
-- [Description of Report Objects]( https://bitbucket.org/cbless/scandb/wiki/Report-Templates ) 
-
+- [DOCX template examples]( https://github.com/c-bless/scandb/tree/master/examples ) 
+- [Description of Report Objects]( https://github.com/c-bless/scandb/wiki/Report%E2%80%90Templates ) 
 
 
 ```
