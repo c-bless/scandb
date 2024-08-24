@@ -113,13 +113,14 @@ $ scandb-services --list -d " " -u 53 -t 80 -o intersection
 ## scandb-statistics
 This command can be used to display statistics or to create a csv file with all IP addresses and their open ports.
 ```
-$  scandb-statistics -h
+$  scandb-statistics -h             
 usage: scandb-statistics [-h] [--db DB] [-s] [-v] [-p] [--host-portlist] [-d DELIMITER] [-o OUTFILE] [-w] [--docx] [--template TEMPLATE]
 
-I can generate statistics about vulnerabilities, open ports or for the imported scans. Furthermore I can generate a host/portlist as csv file. All statistics can be displayed on stdout or they can be written to csv or docx files (based on templates). See
-https://bitbucket.org/cbless/scandb/src/master/examples/ for example templates.A description of usable objects and their attributes can be found under: https://bitbucket.org/cbless/scandb/wiki/Report-Templates
+I can generate statistics about vulnerabilities, open ports or for the imported scans. Furthermore I can generate a host/portlist as csv file. All statistics can be displayed on stdout or they can be written to csv or docx
+files (based on templates). See https://github.com/c-bless/scandb/tree/master/examples for example templates.A description of usable objects and their attributes can be found under:
+https://github.com/c-bless/scandb/wiki/Report%E2%80%90Templates
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   --db DB
   -s, --scan-statistics
@@ -135,16 +136,18 @@ optional arguments:
                         Prefix for output files.
   -w, --write-file      Write data to CSV file. Prefix of filename can be changed with parameter outfile
   --docx                Render the given DOCX template for the selected statistics. Prefix of filename can be changed with parameter '--outfile'. The template can be specified with parameter '--template'
-  --template TEMPLATE   Name of the template to render. Examples can be found under: https://bitbucket.org/cbless/scandb/src/master/examples/
+  --template TEMPLATE   Name of the template to render. Examples can be found under: https://github.com/c-bless/scandb/tree/master/examples
+
 ```
 
 To generate a list of open TCP and UDP ports you can use the following command:
 ```
 $  scandb-statistics --host-portlist
 Results written to : scandb-hostportlist.csv
+Results written to : scandb-hostportlist2.csv
 ```
 
-The content of the file scandb-hostportlist.csv will looks like this.
+The content of the file scandb-hostportlist.csv looks like this.
 ```
 192.168.1.1;53;udp
 192.168.1.1;53,80,443,5060,8181;tcp
@@ -152,6 +155,13 @@ The content of the file scandb-hostportlist.csv will looks like this.
 192.168.1.2;53,80,5060,8089;tcp
 ```
 
+The content of the file scandb-hostportlist2.csv looks like this.
+```
+Address;TCP-Ports;UDP-Ports
+192.168.1.1;53,80,443,5060,8181;53
+192.168.1.19;-;161
+192.168.1.2;53,80,5060,8089;-
+```
 
 ## scandb-vulns
 This command can be used to generate target lists based on vulnerability filters.

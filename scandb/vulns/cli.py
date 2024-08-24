@@ -2,10 +2,6 @@ import argparse
 import json
 
 from scandb.models.db import init_db
-from scandb.vulns.queries import get_ips_by_filter
-from scandb.vulns.queries import get_details_by_filter
-from scandb.vulns.queries import get_ips_by_severity
-from scandb.vulns.queries import get_details_by_severity
 
 from scandb.vulns.queries import *
 

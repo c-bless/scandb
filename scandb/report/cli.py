@@ -52,9 +52,9 @@ def create_list_ReportVulnByAddressList(engine, min_severity=0, plugin_ids=[]):
 
 def report_cli():
     parser = argparse.ArgumentParser(description="Generate DOCX reports based on custom templates. "
-                                    "See https://bitbucket.org/cbless/scandb/src/master/examples/ for example templates."
+                                    "See https://github.com/c-bless/scandb/tree/master/examples for example templates."
                                     "A description of usable objects and their attributes can be found under: \n"
-                                    "https://bitbucket.org/cbless/scandb/wiki/Report-Templates")
+                                    "https://github.com/c-bless/scandb/wiki/Report%E2%80%90Templates")
     parser.add_argument("--db", type=str, required=False, default="scandb.sqlite")
     parser.add_argument("--min-severity", type=int, required=False, default=0,
                         help="Minimum severity level (default: 0). Either plugins or min-severity can be used.")
@@ -70,7 +70,7 @@ def report_cli():
                                                "the template. (default 'plugin')")
     parser.add_argument("--template", type=str, required=False, default="scandb-template.docx",
                         help="Name of the template to render. Examples can be found under: "
-                             "https://bitbucket.org/cbless/scandb/src/master/examples/")
+                             "https://github.com/c-bless/scandb/tree/master/examples")
     parser.add_argument("--outfile", type=str, required=False, default="scandb-report.docx",
                         help="Name that is used for the generated report.")
     args = parser.parse_args()

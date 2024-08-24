@@ -10,7 +10,6 @@ python-docx==1.1.2
 python-libnessus==1.0.0.10
 python-libnmap==0.7.3
 pytz==2024.1
-scandb==1.1.0
 setuptools==73.0.1
 six==1.16.0
 SQLAlchemy==1.4.53
