@@ -12,10 +12,10 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='scandb',
-    version='1.1.0',
+    version='1.2.0',
     author='Christoph Bless',
-    author_email='bitbucket@cbless.de',
-    url='https://bitbucket.org/cbless/scandb',
+    author_email='github@cbless.de',
+    url='https://github.com/c-bless/scandb',
     license=' GPLv3',
     description=("Scripts to import nmap and nessus scan results into a SQLite database, analyze the overall results and generate reports or target lists."),
     long_description=long_description,

@@ -5,6 +5,7 @@ from scandb.models.report import ReportScanStat
 from scandb.models.report import ReportVulnStat
 from scandb.models.report import ReportPortStat
 from scandb.models.report import ReportHostPortStat
+from scandb.models.report import ReportHostPortStat2
 
 
 def execute_query(db, query):
@@ -102,6 +103,32 @@ def get_host_port_list(db):
         stat = ReportHostPortStat(address=address, ports=ports, protocol=protocol)
         result.append(stat)
     return result
+
+
+def get_host_port_list2(db):
+    sql = """
+            select address , group_concat(distinct port), protocol from Port where protocol = 'tcp' and status='open' group by address
+            union
+            select address , group_concat(distinct port), protocol from Port where protocol = 'udp' and status='open' group by address;"""
+    rows = execute_query(db, sql)
+    tmp_result = {}
+    result = []
+    for r in rows:
+        address, ports, protocol = r
+        tcp = ports if protocol == "tcp" else None
+        udp = ports if protocol == "udp" else None
+        if address not in tmp_result.keys():
+            stat = ReportHostPortStat2(address=address, tcp_ports=tcp, udp_ports=udp)
+            tmp_result[address] = stat
+        else:
+            if tcp is not None:
+                tmp_result[address].tcp_ports(tcp)
+            if udp is not None:
+                tmp_result[address].udp_ports(udp)
+    for k in tmp_result.keys():
+        result.append(tmp_result[k])
+    return result
+
 
 def get_host_port_list_services(db):
     sql = """

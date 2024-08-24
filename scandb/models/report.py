@@ -905,6 +905,46 @@ class ReportHostPortStat(object):
         return delimiter.join([self.address, self.ports, self.protocol])
 
 
+class ReportHostPortStat2(object):
+    def __init__(self, address="", tcp_ports="", udp_ports=""):
+        self._address = address
+        self._tcp_ports = tcp_ports
+        self._udp_ports = udp_ports
+
+    @property
+    def address(self):
+        return self._address
+
+    @address.setter
+    def address(self, value):
+        self._address = value
+
+    @property
+    def tcp_ports(self):
+        return self._tcp_ports
+
+    @tcp_ports.setter
+    def tcp_ports(self, value):
+        self._tcp_ports = value
+
+    @property
+    def udp_ports(self):
+        return self._udp_ports
+
+    @udp_ports.setter
+    def udp_ports(self, value):
+        self._udp_ports = value
+
+    @staticmethod
+    def get_csv_header(delimiter=";"):
+        return delimiter.join(["Address", "TCP-Ports", "UDP-Ports"])
+
+    def as_csv(self, delimiter=";"):
+        tcp = self._tcp_ports if self._tcp_ports is not None else "-"
+        udp = self._udp_ports if self._udp_ports is not None else "-"
+        return delimiter.join([self._address, tcp, udp])
+
+
 class ReportScanStat(object):
     def __init__(self, id="", type="", start="", end="", elapsed="", hosts_total="", hosts_up="", hosts_down="", name=""):
         self._id = id

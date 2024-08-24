@@ -3,6 +3,7 @@ import argparse
 from scandb.models.report import ReportVulnStat
 from scandb.models.report import ReportPortStat
 from scandb.models.report import ReportHostPortStat
+from scandb.models.report import ReportHostPortStat2
 from scandb.models.report import ReportScanStat
 
 from scandb.report.cli import write_to_template
@@ -10,6 +11,7 @@ from scandb.report.cli import write_to_template
 from scandb.statistics.queries import get_scan_stats
 from scandb.statistics.queries import get_port_stats
 from scandb.statistics.queries import get_host_port_list
+from scandb.statistics.queries import get_host_port_list2
 from scandb.statistics.queries import get_vuln_stats
 
 
@@ -28,7 +30,7 @@ def handle_scan_stats(db, outfile, write_file = False, delimiter= ";", gen_docx=
                                       stat.hosts_down, stat.name))
         results_csv.append(s.as_csv(delimiter=delimiter))
 
-    print("\n".join(results_cli))
+    print("\n".join(str(results_cli)))
     if write_file:
         filename = "{0}-scan-statistics.csv".format(outfile)
         with open(filename, "w") as f:
@@ -89,16 +91,22 @@ def handle_port_stats(db, outfile, write_file = False, delimiter=";", gen_docx=F
 
 def handle_host_port_list(db, outfile, delimiter=";", gen_docx=False, template=""):
     rows = get_host_port_list(db)
-
     results_csv = [ReportHostPortStat.get_csv_header(delimiter=delimiter)]
-
     for r in rows:
         results_csv.append(r.as_csv(delimiter=delimiter))
-
     filename = "{0}-hostportlist.csv".format(outfile)
     with open(filename,'w') as f:
         f.write("\n".join(results_csv))
-    print ("Results written to : {0}".format(filename))
+    print("Results written to : {0}".format(filename))
+
+    results_csv2 = [ReportHostPortStat2.get_csv_header(delimiter=delimiter)]
+    for r in get_host_port_list2(db):
+        results_csv2.append(r.as_csv(delimiter=delimiter))
+
+    filename2 = "{0}-hostportlist2.csv".format(outfile)
+    with open(filename2,'w') as f:
+        f.write("\n".join(results_csv2))
+    print("Results written to : {0}".format(filename2))
 
     if gen_docx:
         filename="{0}-hostportlist.docx".format(outfile)
@@ -110,10 +118,10 @@ def statistics_cli():
                                                  "for the imported scans. Furthermore I can generate a host/portlist "
                                                  "as csv file. All statistics can be displayed on stdout or they can "
                                                  "be written to csv or docx files (based on templates). "
-                                                 "See https://bitbucket.org/cbless/scandb/src/master/examples/ for "
+                                                 "See https://github.com/c-bless/scandb/tree/master/examples for "
                                                  "example templates.A description of usable objects and their "
                                                  "attributes can be found under: "
-                                                 "https://bitbucket.org/cbless/scandb/wiki/Report-Templates")
+                                                 "https://github.com/c-bless/scandb/wiki/Report%E2%80%90Templates")
     parser.add_argument("--db", type=str, required=False, default="scandb.sqlite")
     parser.add_argument("-s", "--scan-statistics", required=False, action='store_true', default=False,
                         help="Print statistics for each scan")
@@ -133,7 +141,7 @@ def statistics_cli():
                              "'--template'")
     parser.add_argument("--template", type=str, required=False, default="scandb-template.docx",
                         help="Name of the template to render. Examples can be found under: "
-                             "https://bitbucket.org/cbless/scandb/src/master/examples/")
+                             "https://github.com/c-bless/scandb/tree/master/examples")
 
     args = parser.parse_args()
 
